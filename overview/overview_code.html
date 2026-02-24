@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Updated Flowchart Node Positioning</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --tech-white: #ffffff;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #f8fafc 0%, #ffffff 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(59, 130, 246, 0.15);
+            --hub-glow: 0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.1);
+            --disposal-glow: 0 0 20px rgba(244, 63, 94, 0.4), 0 0 40px rgba(244, 63, 94, 0.1);
+        }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-gradient);
+            color: #1e293b;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .tech-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tech-card:hover {
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.08), 0 0 20px var(--primary-glow);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .hub-node {
+            box-shadow: var(--hub-glow);
+            border: 2px solid #3b82f6 !important;
+            background: #eff6ff !important;
+        }
+        .disposal-node-active {
+            box-shadow: var(--disposal-glow);
+            border: 2px solid #f43f5e !important;
+            background: #fff1f2 !important;
+        }
+        .dot-grid {
+            background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
+            background-size: 24px 24px;
+        }
+        .btn-tech {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            transition: all 0.3s ease;
+        }
+        .btn-tech:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+            filter: brightness(1.05);
+        }
+        .org-header {
+            font-size: 0.85rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            color: #1e293b;
+            padding: 6px 20px;
+            background: #ffffff;
+            border-radius: 99px;
+            border: 1px solid #e2e8f0;
+            white-space: nowrap;
+            z-index: 20;
+        }
+        .title-spacing {
+            letter-spacing: 0.05em;
+        }
+        .header-spacing {
+            letter-spacing: 0.08em;
+        }
+        .flow-node-size {
+            width: 120px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .flow-node-shrink {
+            width: 110px;
+            height: 100px;
+            clip-path: polygon(0 0, 85% 0, 100% 15%, 100% 100%, 0 100%);
+        }
+        .flow-icon-container {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+        .group-container {
+            padding: 12px;
+            border: 1.5px dashed rgba(59, 130, 246, 0.25);
+            border-radius: 20px;
+            position: relative;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<header class="bg-white/80 backdrop-blur-xl border-b border-slate-100 py-3 px-8 sticky top-0 z-50">
+<div class="max-w-[1400px] mx-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-100">
+<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></path></svg>
+</div>
+<h1 class="text-lg font-black text-slate-800 title-spacing">企业信贷风控演示系统</h1>
+</div>
+</div>
+</header>
+<main class="max-w-[1400px] mx-auto px-8 py-10">
+<section class="mb-16">
+<div class="relative dot-grid p-6 py-8 rounded-[1.5rem] border border-slate-200 bg-white/50 overflow-visible shadow-lg shadow-slate-100 max-w-[1240px] mx-auto">
+<div class="relative flex items-center justify-center z-10 gap-0">
+<div class="group-container bg-blue-50/30 flex items-center gap-1.5">
+<div class="absolute -top-10 left-0 w-full flex justify-center pointer-events-none">
+<span class="org-header shadow-sm">总行侧 企业风险管理系统</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="tech-card flow-node-size rounded-xl text-center">
+<div class="flow-icon-container bg-blue-50 text-blue-600">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7v10c0 1.1.9 2 2 2h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2zM4 7l8 5 8-5"></path></svg>
+</div>
+<h4 class="font-bold text-[11px] text-slate-800 tracking-wide">风控数据</h4>
+</div>
+</div>
+<div class="flex items-center px-0.5">
+<svg class="w-3 h-3 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path></svg>
+</div>
+<div class="flex flex-col items-center">
+<div class="tech-card flow-node-size rounded-xl text-center">
+<div class="flow-icon-container bg-indigo-50 text-indigo-600">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+</div>
+<h4 class="font-bold text-[11px] text-slate-800 tracking-wide">风控模型</h4>
+</div>
+</div>
+<div class="flex items-center px-0.5">
+<svg class="w-3 h-3 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path></svg>
+</div>
+<div class="flex flex-col items-center">
+<div class="tech-card flow-node-size rounded-xl text-center">
+<div class="flow-icon-container bg-slate-50 text-slate-600">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+</div>
+<h4 class="font-bold text-[11px] text-slate-800 tracking-wide">预警加工</h4>
+</div>
+</div>
+</div>
+<div class="flex items-center px-4">
+<svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M13 6l6 6-6 6M5 6l6 6-6 6"></path></svg>
+</div>
+<div class="flex flex-col items-center relative">
+<div class="tech-card hub-node flow-node-size flow-node-shrink rounded-none text-center">
+<div class="flow-icon-container bg-blue-600 text-white shadow-lg !rounded-full mt-2">
+<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6s-.67-1.5-1.5-1.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"></path></svg>
+</div>
+<h4 class="font-black text-[11px] text-blue-700 tracking-wider">预警清单</h4>
+</div>
+</div>
+<div class="flex items-center px-4">
+<svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M13 6l6 6-6 6M5 6l6 6-6 6"></path></svg>
+</div>
+<div class="group-container bg-blue-50/20 flex items-center gap-1.5">
+<div class="absolute -top-10 left-0 w-full flex justify-center pointer-events-none">
+<span class="org-header shadow-sm">分行侧 信贷管理系统</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="tech-card flow-node-size rounded-xl text-center border-l-2 border-l-blue-400">
+<div class="flow-icon-container bg-blue-50 text-blue-600 !rounded-full">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+</div>
+<h4 class="font-bold text-[9px] text-slate-800 leading-tight tracking-wide">预警处理/<br/>客户核查</h4>
+</div>
+<div class="mt-2 text-[8px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 uppercase tracking-widest">客户经理</div>
+</div>
+<div class="flex items-center px-0.5">
+<svg class="w-3 h-3 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path></svg>
+</div>
+<div class="flex flex-col items-center">
+<div class="tech-card flow-node-size rounded-xl text-center border-l-2 border-l-indigo-400">
+<div class="flow-icon-container bg-indigo-50 text-indigo-600 !rounded-full">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+</div>
+<h4 class="font-bold text-[9px] text-slate-800 leading-tight tracking-wide">预警审核/<br/>分析研判</h4>
+</div>
+<div class="mt-2 text-[8px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 uppercase tracking-widest">风控经理</div>
+</div>
+<div class="flex items-center px-0.5">
+<svg class="w-3 h-3 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path></svg>
+</div>
+<div class="flex flex-col items-center">
+<div class="tech-card flow-node-size rounded-xl text-center border-l-2 border-l-slate-800">
+<div class="flow-icon-container bg-slate-100 text-slate-800 !rounded-full">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+</div>
+<h4 class="font-bold text-[9px] text-slate-800 leading-tight tracking-wide">预警审批/<br/>决策合规</h4>
+</div>
+<div class="mt-2 text-[8px] font-black text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 uppercase tracking-widest">信贷主管</div>
+</div>
+</div>
+<div class="flex items-center px-4">
+<svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M13 6l6 6-6 6M5 6l6 6-6 6"></path></svg>
+</div>
+<div class="flex flex-col items-center">
+<div class="tech-card disposal-node-active flow-node-size flow-node-shrink rounded-none text-center">
+<div class="flow-icon-container bg-rose-600 text-white shadow-lg !rounded-full mt-2">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.407 2.64 1.04M12 8V7m0 11v1m0-1c-1.11 0-2.08-.407-2.64-1.04M12 18V7m-5 4h10"></path></svg>
+</div>
+<h4 class="font-black text-[11px] text-rose-700 leading-tight tracking-wider">处置/<br/>催收</h4>
+</div>
+<div class="mt-2 text-[8px] font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100 uppercase tracking-widest">资产保全部</div>
+</div>
+</div>
+<div class="absolute bottom-[-24px] left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white px-8 py-2.5 rounded-full border border-blue-100 shadow-xl z-30">
+<svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+<span class="text-xs font-black text-slate-800 header-spacing">数据飞轮</span>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="tech-card rounded-[2rem] p-8 py-10 flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-20 h-20 bg-blue-50/50 rounded-bl-[2.5rem] -mr-4 -mt-4 transition-all group-hover:scale-110"></div>
+<div class="relative z-10 mb-6">
+<div class="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center mb-5 border border-blue-50">
+<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+</div>
+<h3 class="text-base font-black text-slate-800 mb-1 header-spacing">智能开发平台</h3>
+</div>
+<p class="text-[12px] leading-[1.8] text-slate-500 mb-8 flex-grow">
+                    贷后风控流水线能力，包含数据集管理、数据工程、特征工程、Prompt设计及质检全链路开发。
+                </p>
+<a id="platform-link" href="#" class="btn-tech w-full py-3 rounded-lg text-white font-black text-xs flex items-center justify-center gap-2 no-underline">
+                    进入系统
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+</a>
+</div>
+<div class="tech-card rounded-[2rem] p-8 py-10 flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-20 h-20 bg-indigo-50/50 rounded-bl-[2.5rem] -mr-4 -mt-4 transition-all group-hover:scale-110"></div>
+<div class="relative z-10 mb-6">
+<div class="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center mb-5 border border-indigo-50">
+<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+</div>
+<h3 class="text-base font-black text-slate-800 mb-1 header-spacing">总行预警清单</h3>
+</div>
+<p class="text-[12px] leading-[1.8] text-slate-500 mb-8 flex-grow">
+                    总行级风险预警统一管控中心，提供跨区域、跨系统的风险信息聚合看板与总部直达督办能力。
+                </p>
+<a href="../headquarters_alarm_list/headquarters_alarm_list_v2.html" class="btn-tech w-full py-3 rounded-lg text-white font-black text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-500 no-underline">
+                    进入系统
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+</a>
+</div>
+<div class="tech-card rounded-[2rem] p-8 py-10 flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-20 h-20 bg-amber-50/50 rounded-bl-[2.5rem] -mr-4 -mt-4 transition-all group-hover:scale-110"></div>
+<div class="relative z-10 mb-6">
+<div class="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center mb-5 border border-amber-50">
+<svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+</div>
+<h3 class="text-base font-black text-slate-800 mb-1 header-spacing">分行预警核查</h3>
+</div>
+<p class="text-[12px] leading-[1.8] text-slate-500 mb-8 flex-grow">
+                    普惠业务客户经理工作平台，针对贷后风险报告进行风险核实及闭环处理，辅助决策与报告生成。
+                </p>
+<a href="../warning_service_platform/warning_service_platform_v6.html" class="btn-tech w-full py-3 rounded-lg text-white font-black text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 shadow-amber-50 no-underline">
+                    进入系统
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+</a>
+</div>
+<div class="tech-card rounded-[2rem] p-8 py-10 flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-20 h-20 bg-emerald-50/50 rounded-bl-[2.5rem] -mr-4 -mt-4 transition-all group-hover:scale-110"></div>
+<div class="relative z-10 mb-6">
+<div class="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center mb-5 border border-emerald-50">
+<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+</div>
+<h3 class="text-base font-black text-slate-800 mb-1 header-spacing">数据飞轮</h3>
+</div>
+<p class="text-[12px] leading-[1.8] text-slate-500 mb-8 flex-grow">
+                    基于内容回复进行模型迭代，支持违约情况知识萃取、模型训练语料构建及策略动态调整。
+                </p>
+<a href="../operations_platform/operations_paltform-v2.1.html" class="btn-tech w-full py-3 rounded-lg text-white font-black text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 shadow-emerald-50 no-underline">
+                    进入系统
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+</a>
+</div>
+</div>
+</main>
+<footer class="py-10 border-t border-slate-100 bg-white/60 backdrop-blur-md mt-12">
+<div class="max-w-[1400px] mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 bg-slate-800 rounded flex items-center justify-center">
+<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></path></svg>
+</div>
+<div>
+<p class="text-xs font-black text-slate-800 header-spacing">企业信贷风控演示系统</p>
+<p class="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em]">© 2024 Professional Enterprise Infrastructure</p>
+</div>
+</div>
+<div class="flex items-center gap-8 text-[9px] font-black text-slate-500 uppercase tracking-widest">
+<a class="hover:text-blue-600 transition-colors" href="#">Security Policy</a>
+<a class="hover:text-blue-600 transition-colors" href="#">API Docs</a>
+<a class="hover:text-blue-600 transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const platformLink = document.getElementById('platform-link');
+        if (platformLink) {
+            // Use the same hostname as the current page, but with port 8465
+            const dynamicUrl = `http://${window.location.hostname}:8465`;
+            platformLink.href = dynamicUrl;
+        }
+    });
+</script>
+</body></html>

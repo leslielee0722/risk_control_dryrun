@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>银行风控预警服务平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 头部样式 - 修复对齐问题 */
+        .header {
+            background: linear-gradient(135deg, #1a3a8f 0%, #2a5bc7 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+        }
+        
+        .header-content {
+            flex: 1;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .header h1 i {
+            margin-right: 12px;
+            font-size: 26px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .user-info {
+            text-align: right;
+            padding-top: 5px;
+            min-width: 200px;
+        }
+        
+        .user-info span {
+            display: block;
+            font-size: 14px;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            font-size: 16px !important;
+            margin-bottom: 3px;
+        }
+        
+        /* 页签样式 */
+        .tabs-container {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+        
+        .tabs-header {
+            display: flex;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .tab-btn {
+            padding: 18px 30px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tab-btn:hover {
+            color: #2a5bc7;
+            background-color: #f0f5ff;
+        }
+        
+        .tab-btn.active {
+            color: #2a5bc7;
+        }
+        
+        .tab-btn.active:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #2a5bc7;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 子页签样式 */
+        .sub-tabs-container {
+            border-bottom: 1px solid #eaeaea;
+            background-color: #fdfdfd;
+        }
+        
+        .sub-tabs-header {
+            display: flex;
+            padding: 0 30px;
+        }
+        
+        .sub-tab-btn {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .sub-tab-btn:hover {
+            color: #2a5bc7;
+        }
+        
+        .sub-tab-btn.active {
+            color: #2a5bc7;
+            font-weight: 600;
+        }
+        
+        .sub-tab-btn.active:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #2a5bc7;
+        }
+        
+        /* 我的预警工作页签 */
+        .tab-title {
+            padding: 25px 30px 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2a5bc7;
+            border-bottom: 1px solid #eaeaea;
+            background-color: white;
+        }
+        
+        /* 风险评估生成页面样式 */
+        .risk-assessment-section {
+            padding: 30px;
+        }
+        
+        /* 企业编码查询框样式 - 修改后放在表格上方 */
+        .table-query-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .table-title-section {
+            flex: 1;
+        }
+        
+        .query-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .query-input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background-color: #f5f5f5;
+            color: #666;
+            width: 180px;
+        }
+        
+        .query-input::placeholder {
+            color: #999;
+        }
+        
+        .query-input:focus {
+            outline: none;
+            border-color: #2a5bc7;
+            background-color: white;
+            color: #333;
+        }
+        
+        .query-btn, .reset-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .query-btn {
+            background-color: #2a5bc7;
+            color: white;
+        }
+        
+        .query-btn:hover {
+            background-color: #1a3a8f;
+        }
+        
+        .query-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .reset-btn {
+            background-color: #f0f5ff;
+            color: #2a5bc7;
+            border: 1px solid #c5d4ff;
+        }
+        
+        .reset-btn:hover {
+            background-color: #e1e9ff;
+        }
+        
+        /* 评估统计信息行 */
+        .assessment-stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .stats-left {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            max-width: 40%;
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 100px;
+            flex: 1;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2a5bc7;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .stats-right {
+            flex: 1;
+            max-width: 55%;
+            margin-left: 20px;
+        }
+        
+        .chart-color-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .color-legend-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .color-box {
+            width: 12px;
+            height: 12px;
+            margin-right: 5px;
+            border-radius: 2px;
+        }
+        
+        .color-blue {
+            background-color: #2a5bc7;
+        }
+        
+        .color-red {
+            background-color: #c62828;
+        }
+        
+        /* 直方图样式 - 缩小版 */
+        .histogram-chart {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 10px 15px;
+            border: 1px solid #eaeaea;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 130px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            position: relative;
+            margin-top: 5px;
+        }
+        
+        .baseline {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #ccc;
+        }
+        
+        .model-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 28%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .model-name-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .model-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-align: center;
+            width: 28%;
+        }
+        
+        .bars-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            width: 35px;
+            height: 100%;
+        }
+        
+        .bar {
+            width: 25px;
+            border-radius: 3px 3px 0 0;
+            position: relative;
+            transition: height 0.5s ease;
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .bar.risk-enterprise {
+            background-color: #2a5bc7;
+        }
+        
+        .bar.risk-count {
+            background-color: #c62828;
+        }
+        
+        /* 客户评估表格样式 - 调整列间距 */
+        .assessment-table-section {
+            margin-top: 30px;
+        }
+        
+        .assessment-table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2a5bc7;
+            margin-bottom: 15px;
+        }
+        
+        .assessment-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            font-size: 13px;
+            table-layout: fixed; /* 固定表格布局，使列宽更可控 */
+        }
+        
+        .assessment-table th {
+            background-color: #f8f9fa;
+            padding: 14px 8px; /* 统一内边距，左右各8px */
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 1px solid #eaeaea;
+            position: sticky;
+            top: 0;
+            white-space: nowrap; /* 防止标题换行 */
+        }
+        
+        .assessment-table td {
+            padding: 12px 8px; /* 统一内边距，左右各8px */
+            border-bottom: 1px solid #f0f0f0;
+            word-wrap: break-word; /* 允许长内容换行 */
+        }
+        
+        .assessment-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .assessment-table tr:hover {
+            background-color: #f9fbff;
+        }
+        
+        /* 为各列设置合理的宽度比例 */
+        .assessment-table th:nth-child(1) { width: 18%; } /* 客户名称 - 加宽以容纳英文名称 */
+        .assessment-table th:nth-child(2) { width: 12%; } /* 客户编码 */
+        .assessment-table th:nth-child(3) { width: 12%; } /* 区域 - 加宽以容纳英文区域 */
+        .assessment-table th:nth-child(4) { width: 10%; } /* 行业 */
+        .assessment-table th:nth-child(5) { width: 8%; }  /* 企业规模 */
+        .assessment-table th:nth-child(6) { width: 10%; } /* 是否预测违约 */
+        .assessment-table th:nth-child(7) { width: 10%; } /* 归因解释 */
+        .assessment-table th:nth-child(8) { width: 8%; }  /* 评估日期 */
+        
+        /* 状态标签样式 */
+        .status-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .status-yes {
+            background-color: #ffeaea;
+            color: #d32f2f;
+        }
+        
+        .status-no {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .status-pending {
+            background-color: #fff4e5;
+            color: #ff9800;
+        }
+        
+        /* 详情按钮样式 */
+        .detail-btn {
+            padding: 5px 12px;
+            background: #f0f5ff;
+            border: 1px solid #c5d4ff;
+            border-radius: 4px;
+            color: #2a5bc7;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .detail-btn:hover {
+            background: #2a5bc7;
+            color: white;
+        }
+        
+        /* 详情模态框样式 - 优化显示 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .detail-modal {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .detail-modal-header {
+            background: #2a5bc7;
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .detail-modal-header h3 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .detail-modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+        
+        .detail-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .detail-modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            max-height: calc(85vh - 120px);
+        }
+        
+        .detail-content {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #333;
+        }
+        
+        .detail-content h4 {
+            color: #2a5bc7;
+            margin: 20px 0 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 8px;
+        }
+        
+        .detail-content h4:first-of-type {
+            margin-top: 5px;
+        }
+        
+        .detail-content p {
+            margin-bottom: 12px;
+            color: #555;
+        }
+        
+        .detail-content ul {
+            margin: 8px 0 15px 25px;
+            color: #555;
+        }
+        
+        .detail-content li {
+            margin-bottom: 6px;
+            list-style-type: disc;
+        }
+        
+        .detail-content strong {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .detail-content .risk-highlight {
+            background-color: #fff4e5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #c62828;
+            font-weight: 600;
+        }
+        
+        .detail-content .risk-moderate {
+            background-color: #fff8e1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #ff8f00;
+            font-weight: 600;
+        }
+        
+        .detail-content .risk-low {
+            background-color: #e8f5e9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        
+        /* 空页面样式 */
+        .empty-page-section {
+            padding: 80px 30px;
+            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            margin: 30px;
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-text {
+            font-size: 18px;
+            color: #999;
+            margin-bottom: 30px;
+        }
+        
+        /* 风险客户名单库查询页签 */
+        .search-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .search-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .search-field {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .search-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .search-field input, .search-field select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+        .search-field input:focus, .search-field select:focus {
+            outline: none;
+            border-color: #2a5bc7;
+        }
+        
+        .search-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #2a5bc7;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1a3a8f;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f5ff;
+            color: #2a5bc7;
+            border: 1px solid #c5d4ff;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e1e9ff;
+        }
+        
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .results-info span {
+            font-weight: 600;
+            color: #2a5bc7;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .assessment-stats-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .stats-left {
+                max-width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .stats-right {
+                max-width: 100%;
+                margin-left: 0;
+            }
+            
+            .assessment-table {
+                font-size: 12px;
+            }
+            
+            .assessment-table th,
+            .assessment-table td {
+                padding: 10px 6px; /* 响应式下适当减小内边距 */
+            }
+            
+            /* 响应式下调整列宽 */
+            .assessment-table th:nth-child(1) { width: 17%; }
+            .assessment-table th:nth-child(2) { width: 13%; }
+            .assessment-table th:nth-child(3) { width: 11%; }
+            .assessment-table th:nth-child(4) { width: 9%; }
+            .assessment-table th:nth-child(5) { width: 8%; }
+            .assessment-table th:nth-child(6) { width: 10%; }
+            .assessment-table th:nth-child(7) { width: 10%; }
+            .assessment-table th:nth-child(8) { width: 8%; }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .user-info {
+                text-align: left;
+                margin-top: 15px;
+                padding-top: 0;
+                min-width: auto;
+                width: 100%;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+                padding-top: 10px;
+            }
+            
+            .tab-btn, .sub-tab-btn {
+                padding: 15px 20px;
+                font-size: 15px;
+            }
+            
+            .search-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-field {
+                min-width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .stats-left {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+            
+            .stat-item {
+                min-width: 80px;
+            }
+            
+            .chart-container {
+                flex-direction: column;
+                align-items: center;
+                height: auto;
+                gap: 20px;
+            }
+            
+            .model-group {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .bars-container {
+                height: 100px;
+            }
+            
+            .chart-color-legend {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .model-name-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .model-name {
+                width: 100%;
+            }
+            
+            .assessment-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                table-layout: auto; /* 移动端取消固定列宽，允许滚动 */
+            }
+            
+            .assessment-table th,
+            .assessment-table td {
+                white-space: nowrap;
+            }
+            
+            .table-query-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .query-section {
+                width: 100%;
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
+            
+            .query-input {
+                flex: 1;
+                min-width: 150px;
+            }
+            
+            .detail-modal {
+                width: 95%;
+                max-height: 90vh;
+            }
+            
+            .detail-modal-body {
+                padding: 20px;
+            }
+        }
+        
+        /* 底部样式 */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #888;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 - 已修复对齐问题 -->
+        <div class="header">
+            <a href="../overview/overview_code.html" style="color: white; margin-right: 20px; text-decoration: none; display: flex; align-items: center; opacity: 0.9;" title="返回总览">
+                <i class="fas fa-arrow-left" style="font-size: 24px;"></i>
+            </a>
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt"></i> 银行风控预警服务平台</h1>
+                <p>实时监测风险动态，高效管理预警任务，保障银行资产安全</p>
+            </div>
+            <div class="user-info">
+
+                <span class="user-name">王经理 (风险管理专家)</span>
+                <span>最后登录: 今天 09:15</span>
+            </div>
+        </div>
+        
+        <!-- 页签容器 -->
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="tab1" id="riskViewTab">
+                    <i class="fas fa-chart-line"></i> 风险视图
+                </button>
+                <button class="tab-btn" data-tab="tab2" id="myWorkTab">
+                    <i class="fas fa-tasks"></i> 我的预警工作
+                </button>
+                <button class="tab-btn" data-tab="tab3" id="customerQueryTab">
+                    <i class="fas fa-search"></i> 风险客户名单库查询
+                </button>
+            </div>
+            
+            <div id="tab1" class="tab-content active">
+                <div class="sub-tabs-container">
+                    <div class="sub-tabs-header">
+                        <button class="sub-tab-btn active" data-subtab="subtab1" id="riskAssessmentTab">
+                            风险评估生成
+                        </button>
+                        <button class="sub-tab-btn" data-subtab="subtab2" id="warningDispatchTab">
+                            预警处理下发
+                        </button>
+                    </div>
+                    
+                    <div id="subtab1" class="sub-tab-content active">
+                        <div class="risk-assessment-section">
+                            <div class="tab-title">
+                                风险评估生成
+                            </div>
+                            
+                            <div class="assessment-stats-row">
+                                <div class="stats-left">
+                                    <div class="stat-item">
+                                        <div class="stat-number">2000</div>
+                                        <div class="stat-label">评估企业总数</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">20</div>
+                                        <div class="stat-label">预测风险企业数</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-number">22</div>
+                                        <div class="stat-label">月均预测风险企业数</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="stats-right">
+                                    <div class="chart-color-legend">
+                                        <div class="color-legend-item">
+                                            <div class="color-box color-blue"></div>
+                                            <span>风险预测企业数</span>
+                                        </div>
+                                        <div class="color-legend-item">
+                                            <div class="color-box color-red"></div>
+                                            <span>风险预测条数</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="histogram-chart">
+                                        <div class="chart-container">
+                                            <div class="baseline"></div>
+                                            
+                                            <div class="model-group">
+                                                <div class="bars-container">
+                                                    <div class="bar-group">
+                                                        <div class="bar risk-enterprise" id="large-enterprise-bar" style="height: 70px;">
+                                                            <div class="bar-value">20</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-group">
+                                                        <div class="bar risk-count" id="large-count-bar" style="height: 70px;">
+                                                            <div class="bar-value">20</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="model-group">
+                                                <div class="bars-container">
+                                                    <div class="bar-group">
+                                                        <div class="bar risk-enterprise" id="small-enterprise-bar" style="height: 60px;">
+                                                            <div class="bar-value">17</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-group">
+                                                        <div class="bar risk-count" id="small-count-bar" style="height: 60px;">
+                                                            <div class="bar-value">17</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="model-group">
+                                                <div class="bars-container">
+                                                    <div class="bar-group">
+                                                        <div class="bar risk-enterprise" id="rule-enterprise-bar" style="height: 45px;">
+                                                            <div class="bar-value">13</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bar-group">
+                                                        <div class="bar risk-count" id="rule-count-bar" style="height: 77px;">
+                                                            <div class="bar-value">22</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="model-name-container">
+                                            <div class="model-name">大模型</div>
+                                            <div class="model-name">小模型</div>
+                                            <div class="model-name">规则</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="assessment-table-section">
+                                <div class="table-query-container">
+                                    <div class="table-title-section">
+                                        <div class="assessment-table-title">客户风险评估明细</div>
+                                    </div>
+                                    <div class="query-section">
+                                        <input type="text" class="query-input" id="enterpriseCodeInput" placeholder="请输入企业编码" value="">
+                                        <button class="query-btn" id="queryButton">
+                                            <i class="fas fa-search"></i> 查询
+                                        </button>
+                                        <button class="reset-btn" id="resetButton">
+                                            <i class="fas fa-redo"></i> 恢复
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <table class="assessment-table" id="customerAssessmentTable">
+                                    <thead>
+                                        <tr>
+                                            <th>客户名称</th>
+                                            <th>客户编码</th>
+                                            <th>区域</th>
+                                            <th>行业</th>
+                                            <th>企业规模</th>
+                                            <th>是否预测违约</th>
+                                            <th>归因解释</th>
+                                            <th>评估日期</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="customerTableBody">
+                                        <!-- 表格数据将通过JavaScript动态生成 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="subtab2" class="sub-tab-content" style="display: none;">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab2" class="tab-content" style="display: none;">
+            </div>
+            
+            <div id="tab3" class="tab-content" style="display: none;">
+            </div>
+        </div>
+        
+        <div id="detailModal" class="modal-overlay">
+            <div class="detail-modal">
+                <div class="detail-modal-header">
+                    <h3 id="detailModalTitle">归因解释详情</h3>
+                    <button class="detail-modal-close" onclick="closeDetailModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="detail-modal-body">
+                    <div class="detail-content" id="detailModalContent">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <script>
+        // 客户数据 - 根据客户信息1.xlsx附件更新客户名称和区域
+        const customerData = [
+            { name: "SIMPLEX OFFICE SOLUTIONS", code: "1004285007", region: "ANAHEIM", industry: "租赁服务", scale: "小微企业", predictDefault: "是" },
+            { name: "DREAM HOME REALTY", code: "1004535010", region: "TORRANCE", industry: "房地产", scale: "小微企业", predictDefault: "否" },
+            { name: "Winset, Inc. dba Bankers Hill", code: "1005005006", region: "SAN DIEGO", industry: "房地产", scale: "小微企业", predictDefault: "否" },
+            { name: "Shiva Management", code: "1005535001", region: "SAN DIEGO", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "GOLD CROWN HOME LOANS, INC", code: "1005996006", region: "LOS ANGELES", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "SUPERIOR BROKERS REALTY", code: "1015066002", region: "HUNTINGTON PARK", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "SOUTHLAND MGT., CO.", code: "1018975003", region: "SANTA ANA", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "Global Parties Inc. dba Party", code: "1030805001", region: "THOUSAND OAKS", industry: "租赁服务", scale: "小微企业", predictDefault: "是" },
+            { name: "SMOOTH AS SATIN ENTERPRISES IN", code: "1038956001", region: "VALENCIA", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "DORIS JEANNE HARDER DBA HARDER", code: "1045135004", region: "WOODLAND", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "Carmen Hernandez and Pedro Her", code: "1054835004", region: "PICO RIVERA", industry: "租赁服务", scale: "小微企业", predictDefault: "是" },
+            { name: "DESERT REALTY & DEVELOPMENT CO", code: "1077145001", region: "INGLEWOOD", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "Shaky, Inc.", code: "1101815002", region: "STUDIO CITY", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "XPRESS RENT-A-CAR OF HEMET", code: "1106844003", region: "HEMET", industry: "租赁服务", scale: "小微企业", predictDefault: "否" },
+            { name: "Boels, Inc. dba Automated Regi", code: "1113545001", region: "FOUNTAIN VALLEY", industry: "租赁服务", scale: "小微企业", predictDefault: "是" },
+            { name: "First Step Funding, Inc. dba F", code: "1115215000", region: "Orange", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "Premnarayan R. Soni dba Ba Ba", code: "1118365005", region: "APPLE VALLEY", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "Richard Aguilar dba Big Bounce", code: "1122665004", region: "TULARE", industry: "租赁服务", scale: "小微企业", predictDefault: "是" },
+            { name: "Patty Schwartzkopf Properties", code: "1122875008", region: "MAMMOTH LAKES", industry: "房地产", scale: "小微企业", predictDefault: "是" },
+            { name: "New Metro Real Estate Services", code: "2481565005", region: "Chula Vista", industry: "房地产", scale: "小微企业", predictDefault: "是" }
+        ];
+        
+        // 根据附件JSON生成的归因解释详情数据
+        const riskDetailData = {
+            "1004285007": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1.企业运营动态稳定性（高风险）：
+-存续状态：为“新设企业”(NewExist=1)，缺乏可验证的运营历史，其商业模式、管理能力和现金流稳定性均未经考验，是固有高风险点。
+-员工规模与就业变动：员工仅1人，且贷款项目“创造岗位数”和“保留岗位数”均为0。这表明贷款并未用于扩张或稳定团队，与企业增长动态脱节，可能意味着贷款用途不明或业务规模极小，运营极为脆弱。
+
+2.贷款保障机制协同性（中高风险）：
+-担保与抵押：SBA担保比例为50%，提供了部分风险缓释。但关键风险在于“抵押标识”为0（无不动产抵押），使得银行在第二还款来源上依赖不足，与“新设、微小企业”的高风险特征叠加时，保障协同性不足。
+-贷款额度与期限：贷款额度（3万美元）与SBA担保额（1.5万美元）对于微小企业而言属合理范围，36个月期限也属常规。但结合其运营稳定性差的特征，还款能力存疑。
+
+3.行业-经济环境匹配度（中低风险）：
+-行业与周期：行业为“办公设备租赁”(NAICS 532420)，属于服务于企业端的行业，受经济周期影响较明显。所幸申请时“不处于经济衰退期”(Recession=0)，宏观环境有利。企业位于城市(UrbanRural=0)，市场机会多但竞争也激烈。
+-交叉验证矛盾点：在有利的行业环境下，一家新设企业却未计划创造任何就业，其发展意愿和贷款真实用途需要打问号。
+
+4.银行风控地域适配性（需关注）：
+-流程与类型：从批准到放款间隔21天，流程正常。“低文档贷款”标识为N，表明银行要求了相对完整的财务文档，这是严谨的表现。但存在“循环信贷”(RevLineCr=Y)。`,
+                crossValidation: `【交叉验证】：关键矛盾出现——银行对一家员工仅1人、无历史业绩的新设企业授予了“循环信贷”额度。这通常意味着银行基于某种评估认为企业有持续、稳定的现金流需求与偿还能力。然而，该企业的“半年流水”虽然呈上升趋势，但期末绝对额仅为2，043.74美元，基数极低。“循环信贷”的授予与“极低的流水基数”及“新设零雇员增长”的现实严重矛盾。这要么意味着银行风控过于宽松，要么企业提供了与基础运营数据不匹配的现金流预期，存在信息不对称或误判风险。`,
+                conclusion: `【综合判断】
+尽管存在SBA部分担保、非低文档贷款、非经济衰退期等有利因素，但企业的核心风险在于：“新设企业”与“零雇员增长”所表征的极弱运营基础，与“无抵押”的保障缺口形成共振。尤为关键的是，银行授予“循环信贷”的决定与企业微不足道的流水和员工规模存在逻辑冲突，这暴露了风险审查可能存在的重大瑕疵或企业信息可信度问题。
+在多重负面因素交织，且核心风控逻辑出现矛盾的情况下，企业未来现金流不足以覆盖还款义务的可能性很高。`
+            },
+            "1004535010": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性  
+- 该企业为新设企业（NewExist=1），员工仅1人（NoEmp=1），贷款项目未创造或保留就业岗位（CreateJob=0, RetainedJob=0）。表明企业规模极小、经营历史短，且贷款未能带动就业增长，运营稳定性较弱，风险较高。
+
+2. 贷款保障机制协同性  
+- 贷款期限56个月（Term=56），属中期贷款；SBA担保比例为50%（Portion=0.5），提供部分风险缓释；但无不动产抵押（RealEstate=0），担保措施较弱；贷款总额30,000美元（GrAppv=30000），额度较小；该贷款为循环信贷（RevLineCr=Y），虽非低文档贷款（LowDoc=N）意味着文档齐全，但循环信贷的灵活性可能增加资金管理风险。总体保障机制一般，无抵押和循环信贷特征提升风险。
+
+3. 行业-经济环境匹配度  
+- 企业属于房地产中介行业（NAICS=531210），位于城市地区（UrbanRural=0），且申请时处于经济衰退期（Recession=1）。房地产行业对经济周期高度敏感，经济衰退期间交易量易下滑，行业风险显著升高。宏观环境与行业匹配度差，风险突出。
+
+4. 银行风控地域适配性  
+- 贷款银行位于加州（BankState=CA），与企业所在地一致，有利于本地化风控；但审批流程存在异常——批准日期（15130）至发放日期（15978）间隔达848天，远超正常时限，可能暗示流程拖沓或企业状况在期间发生变化，增加不确定性；贷款类型为循环信贷但文档齐全，一定程度上降低了信息风险。异常长的审批间隔构成显著风险信号。`,
+                crossValidation: `【交叉验证】  
+- 新企业且规模小，但提供了完整贷款文档（非低文档），缓解了信息不对称风险。  
+- 经济衰退期房地产行业风险高，但企业半年流水波动较小（围绕3,000基准线震荡），显示一定经营稳定性，然而流水基准偏低，抗风险能力仍弱。  
+- 无抵押与SBA担保部分抵消，但循环信贷在衰退环境中可能增加过度借贷风险。  
+- 审批间隔异常长，且企业在此期间可能未实现增长（员工仍为1人），暗示经营可能停滞，风险累积。`,
+                conclusion: `【综合判断】 
+尽管在运营稳定性、行业环境、审批流程等方面存在多重风险因素，但最终贷款状态为“P I F”（已全额偿还），核销本金为0，表明实际未发生违约。基于历史结果，该企业不存在违约风险。`
+            },
+            "1005005006": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性分析
+- 存续状态（NewExist=1）：企业为新设公司，缺乏历史经营记录和财务数据，运营稳定性相对较弱，信用风险较高。
+- 员工规模（NoEmp=10）：属于小型企业，人力资源配置简单，抗风险能力有限，但规模适中。
+- 就业变动（CreateJob=0, RetainedJob=0）：贷款项目未直接创造或保留就业岗位，可能反映贷款用途并非用于扩张雇佣，对于新企业而言，成长性信号不足。
+- 综合评估：该维度风险偏高，主要源于新设企业的不确定性。
+
+2. 贷款保障机制协同性分析
+- 贷款期限（Term=36个月）：中短期贷款，还款压力适中。
+- 担保比例（Portion=0.5）：SBA提供50%担保，有效分担银行风险，是重要的风险缓释措施。
+- 抵押标识（RealEstate=0）：无不动产抵押，缺乏实物资产保障，增加信用风险。
+- 贷款额度（GrAppv=30000, SBA_Appv=15000）：额度较小，违约损失有限。
+- 贷款类型：循环信贷（RevLineCr=Y）增加了资金使用的灵活性，但也可能带来监控难度；非低文档贷款（LowDoc=N）表明银行已完成完整尽调，降低了信息不对称风险。
+- 综合评估：担保和完整文档部分对冲了无抵押风险，整体风险中等。
+
+3. 行业-经济环境匹配度分析
+- 行业分类（NAICS=531210）：属于“房地产中介和经纪人”行业，周期性较强，对经济波动敏感。
+- 城乡属性（UrbanRural=0）：企业位于城市（San Diego），房地产市场相对活跃，需求较稳定。
+- 经济周期（Recession=0）：申请时未处于经济衰退期，宏观环境有利。
+- 综合评估：行业固有风险存在，但当前环境支持，风险中等。
+
+4. 银行风控地域适配性分析
+- 银行地域（BankState=CA）：银行与企业同处加州，有利于本地化风控和客户了解。
+- 审批流程：批准至放款间隔30天（ApprovalDate=15188, DisbursementDate=15218），流程正常，无异常。
+- 贷款类型：循环信贷但非低文档，显示银行在充分尽调基础上提供灵活产品，风控审慎。
+- 综合评估：银行风控与地域匹配良好，风险较低。`,
+                crossValidation: `【交叉验证】
+- 关键矛盾点：新企业申请循环信贷且无抵押，但银行批准，这得益于SBA担保和非低文档审查。半年流水波动呈“V型”走势（先降后升），反映经营初期波动，但已现反弹信号。
+- 潜在风险：新企业缺乏抵押物、行业周期性、循环信贷的灵活使用可能带来资金挪用或现金流管理风险。然而，SBA担保、完整文档、本地银行监控、较小贷款额度以及流水回升趋势构成了有效的风险缓释。
+- 双向验证：员工数量10人但创造岗位数为0，对于新企业而言，可能贷款用于非雇佣用途（如营运资金），与流水波动及行业特征（房地产中介依赖佣金收入）一致，未发现明显矛盾。`,
+                conclusion: `【综合判断】
+尽管企业为新设、无抵押且行业具有周期性，但SBA提供50%担保，贷款额度较小，银行进行了完整文档审核，且企业流水已呈现回升态势。实际贷款状态为“P I F”（已全额偿还），表明最终未发生违约。综合考虑各维度风险与缓释措施，该企业违约风险可控，不存在显著的违约风险。`
+            },
+            "1005535001": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性
+- 存续状态：企业为新设（NewExist=1），缺乏经营历史与信用记录，运营稳定性存疑。
+- 员工规模：仅6名员工，规模小，抗风险能力弱。
+- 就业变动：创造与保留岗位数均为0，贷款未带来就业增长或保留，暗示业务扩张动力不足。
+- 动态趋势：半年流水在3100至4000间频繁波动，且第4个月出现显著峰值，表明现金流不稳定，收入不均。综合评估：稳定性差，风险较高。
+
+2. 贷款保障机制协同性
+- 贷款期限：36个月，属短期贷款，期限风险可控。
+- 担保比例：SBA担保比例为50%，部分转移银行风险。
+- 抵押标识：无不动产抵押（RealEstate=0），缺乏实物资产缓释。
+- 贷款额度：总额5万美元（SBA担保2.5万），额度较小，敞口有限。协同性分析：虽有政府担保，但无抵押物覆盖全部贷款，保障机制中等偏弱。
+
+3. 行业-经济环境匹配度
+- 行业分类：NAICS 531312（非住宅物业管理），行业受经济周期影响，但现金流通常较稳定。
+- 城乡属性：位于城市（UrbanRural=0，对应SAN DIEGO），需求相对稳定。
+- 经济周期：非衰退期（Recession=0），宏观环境有利。匹配度矛盾：行业通常现金流稳定，但该企业流水波动显著，可能存在经营模式不成熟或客户集中问题，行业与环境匹配度一般。
+
+4. 银行风控地域适配性
+- 银行地域：银行与企业同在加州（CA），本地化服务有助于风险识别。
+- 审批流程：批准至放款间隔17天，流程效率正常，且非低文档贷款（LowDoc=N），审核相对充分。
+- 贷款类型：为循环信贷（RevLineCr=Y），增加流动性管理灵活性，但也可能诱发过度借贷。适配性分析：银行风控措施基本合理，但循环信贷特性可能增加潜在风险。`,
+                crossValidation: `【交叉验证】
+- 矛盾点1：新企业（高风险）申请循环信贷（通常适用于现金流稳定企业），但现金流波动大，二者矛盾，提示还款能力不稳定。
+- 矛盾点2：物业管理行业应有稳定现金流，但企业流水波动显著，可能反映客户基础薄弱或收入结构单一。
+- 风险叠加：新设、无抵押、现金流波动、循环信贷等多重风险因素叠加，尽管有SBA部分担保和短期期限，但整体风险较高。`,
+                conclusion: `【综合判断】
+企业核心风险源于运营稳定性不足（新设、现金流波动）与贷款保障有限（无抵押），虽部分风险被SBA担保、小额短期贷款和 favorable 宏观环境缓释，但交叉验证揭示的矛盾点强化了违约可能性。因此，该企业存在违约风险。`
+            },
+            "1005996006": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性分析
+   存续状态 (NewExist=1)：该企业为新设立企业。新设企业通常缺乏稳定的经营历史、现金流和抗风险能力，属于高风险特征。
+   员工规模 (NoEmp=65)：初始员工规模达65人，规模不小，表明创业投入较大，固定成本较高。
+   就业变动 (CreateJob=3, RetainedJob=65)：贷款项目旨在创造3个新岗位并保留全部65个现有岗位。这对于新企业而言是一个宏大的计划，其可行性高度依赖于业务能否迅速达到预期规模。动态稳定性存在不确定性。
+
+2. 贷款保障机制协同性分析
+   贷款期限与额度 (Term=240月, GrAppv/SBA_Appv=$343,000)：贷款期限长达20年，属于长期贷款。额度适中。
+   担保与抵押 (Portion=1.0, RealEstate=1)：SBA提供100%的担保，且贷款有不动产抵押。从风险缓释角度看，银行的本金风险极低，主要依靠SBA和国家信用。但全额担保在SBA项目中并不普遍，可能暗示企业自身资质不足以获得常规商业贷款。
+   协同性矛盾点：对于一个新设、无历史业绩的企业，获得一笔长期、且由SBA全额担保的抵押贷款，存在逻辑上的不一致。这启动了对企业“新设”状态真实性的核查（见下文交叉验证）。
+
+3. 行业-经济环境匹配度分析
+   行业分类 (NAICS=531390)：属于“房地产相关活动”，具体是“房地产信贷中介”。该行业与房地产市场景气度和利率周期高度相关，波动性大。
+   城乡属性 (UrbanRural=1)：位于洛杉矶（城市）。城市市场竞争激烈，但机会也多。
+   经济周期 (Recession=0)：申请时未处于经济衰退期，宏观环境有利。
+   匹配度判断：企业处于周期性敏感行业。2006年（批准财年）美国房地产市场处于繁荣末期，随后将迎来次贷危机。此时为新设房地产信贷公司提供长期贷款，面临较大的行业下行周期风险。
+
+4. 银行风控地域适配性分析
+   银行地域 (BankState=CO)：贷款银行位于科罗拉多州，而企业在加利福尼亚州。这是跨州业务，可能意味着银行对当地（洛杉矶）的房地产市场、具体经营环境不熟悉，存在地域信息不对称风险。
+   审批流程：从批准到发放间隔63天（16903-16840），时间较长，可能蕴含流程中的审慎或不确定性。
+   贷款类型 (RevLineCr=0, LowDoc=N)：非循环信贷、非低文档贷款，要求提供相对完整的财务文件，这是一个正向风控信号。
+   特殊风险信号：银行名称为“SBA - EDF ENFORCEMENT ACTION”。“EDF ENFORCEMENT ACTION”可能指银行自身正面临SBA的执法或整改行动。这构成了一个极强的负面信号，表明该银行的风控流程或合规性可能存在问题，其贷款审批的严谨性存疑。`,
+                crossValidation: `【交叉验证】
+1.  “新设企业”与“大规模员工及全额担保”的矛盾：一家新设企业却拥有65名员工，并计划全部保留，这不符合典型初创企业的特征。这可能意味着企业是既有团队/业务通过新法律实体重组而来，或创业计划非常激进。无论是哪种情况，其“新设”标签下的真实运营稳定性和财务预测可靠性都需要高度质疑。这与SBA提供全额担保的宽松条件形成对比，可能表明银行和SBA过度依赖抵押和政府信用，而放松了对企业主体自身偿付能力的审查。
+2.  “高风险行业周期”与“超长期限贷款”的矛盾：在房地产周期高点，向一家新设的、周期敏感的房地产中介发放20年期贷款。一旦行业转向（如随后发生的次贷危机），企业业务将迅速萎缩，长期偿债能力面临严峻考验。虽然贷款有全额担保和抵押，但银行的催收和管理成本会上升，且抵押物价值也可能随房地产泡沫破裂而缩水。
+3.  “银行自身风险”与“跨州业务”的叠加：银行自身面临监管行动，其风控能力本已亮起红灯。同时，它还在跨州发放一笔给新设企业的长期贷款，进一步放大了尽职调查不足和贷后管理失效的风险。这是最值得警惕的风险组合。`,
+                conclusion: `【综合判断】
+尽管该笔贷款有SBA全额担保和不动产抵押，从银行最终损失角度看风险较低（数据显示该贷款最终状态为“P I F”-已全额偿还），但从贷款发放前的信用风险评估角度看，企业主体存在显著的违约风险：
+1.  企业为新设主体，处于高波动的房地产行业，且恰逢行业周期顶点，自身经营稳定性风险极高。
+2.  贷款条款（长期限）与企业所处行业周期位置严重错配。
+3.  最关键的是，发放贷款的银行自身存在严重的合规与风控隐患，这极大地削弱了其贷款决策的可信度。银行可能因自身问题而未能有效执行审慎信贷标准。
+基于对企业主体信用资质、行业周期风险以及放贷机构风控失效的综合评估，该企业在申请贷款时存在明确的违约风险。`
+            },
+            "1015066002": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性：
+   - 存续状态：新设企业（NewExist=1），缺乏历史经营记录，稳定性差。
+   - 员工规模：仅2名员工，规模极小，抗风险能力弱。
+   - 就业变动：创造岗位数为0，保留岗位数为2，表明贷款未带来扩张，仅维持现有运营，成长性不足。
+   - 动态趋势：半年流水波动显示经营现金流由正增长急剧转为大幅负值且持续亏损，印证运营稳定性严重恶化。
+
+2. 贷款保障机制协同性：
+   - 贷款期限：269个月（约22.4年），期限极长，不确定性高。
+   - 担保比例：SBA担保75%（Portion=0.75），风险缓释较强。
+   - 抵押标识：有房地产抵押（RealEstate=1），但长期限下抵押物价值可能受周期波动影响。
+   - 贷款额度：批准总额297,500美元，相对小微企业规模偏大。
+   - 协同性矛盾：长期限与大额贷款叠加，尽管有抵押和担保，但保障机制与小微新企业的经营能力不匹配。
+
+3. 行业-经济环境匹配度：
+   - 行业分类：房地产中介（NAICS=531210），行业周期性强。
+   - 城乡属性：城市地区（UrbanRural=1），受经济波动影响更直接。
+   - 经济周期：申请时非衰退期（Recession=0），但2006年处于房地产泡沫顶峰，随后行业崩溃，宏观经济与行业趋势严重错配。
+
+4. 银行风控地域适配性：
+   - 银行地域：银行在俄亥俄州（OH），企业在加利福尼亚州（Huntington Park），跨州放贷导致银行对当地房地产市场了解不足，地域适配性差。
+   - 审批流程：批准到放款间隔19天，流程正常；非低文档贷款（LowDoc=N）表明审查较严格，但跨州风险未有效缓释。
+   - 贷款类型：非循环信贷（RevLineCr=0），流动性支持有限。`,
+                crossValidation: `【交叉验证】
+- 新设小微企业在房地产行业峰值期申请长期大额贷款，与行业下行趋势背离，半年流水逆转证实经营迅速恶化，矛盾显著。
+- 跨州放贷叠加行业周期风险，抵押物价值可能随市场下跌而缩水，尽管有SBA担保，银行仍承担部分损失（最终核销本金247,074美元）。
+- 员工规模极小但贷款用于房地产相关用途，风险高度集中。`,
+                conclusion: `【综合判断】
+企业运营稳定性差、行业环境即将恶化、贷款保障机制与长期风险不协同、银行风控地域适配性不足，多重风险叠加，违约风险极高。最终贷款状态为核销（CHGOFF）也印证了此风险。`
+            },
+            "1018975003": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性：企业为新设企业（NewExist=1），员工规模小（NoEmp=5），且贷款项目未创造或保留就业岗位（CreateJob=0, RetainedJob=0），表明企业经营基础薄弱，缺乏增长动力，动态稳定性差。
+
+2. 贷款保障机制协同性：贷款无不动产抵押（RealEstate=0），SBA担保比例为50%（Portion=0.5），风险缓释措施有限；贷款期限较短（Term=22个月），还款压力相对集中；贷款额度较小（GrAppv=50000），但保障机制协同性不足。
+
+3. 行业-经济环境匹配度：企业属于房地产相关行业（NAICS=531390），位于城市地区（UrbanRural=1），虽不处于经济衰退期（Recession=0），但房地产行业对经济周期敏感，新企业进入面临较高市场风险。
+
+4. 银行风控地域适配性：银行位于北卡罗来纳州（BankState=NC），而企业在加利福尼亚州，跨州贷款可能导致银行对当地经济和企业经营了解不足，增加信息不对称风险；审批至放款间隔31天，属正常流程；贷款类型为标准贷款（RevLineCr=N, LowDoc=N），但半年流水数据显示前三个月平稳、第四个月出现缺失/断层波动，暗示经营活动不稳定。`,
+                crossValidation: `【交叉验证】
+- 新设企业与房地产行业结合，加剧了市场进入风险。
+- 无抵押、跨州贷款与现金流波动相互印证，表明风险缓释不足且经营存在不确定性。
+- 员工数量少、无就业创造与流水异常共同指向经营稳定性差。`,
+                conclusion: `【综合判断】
+多重风险信号叠加，企业违约风险显著。`
+            },
+            "1030805001": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性评估
+- 存续状态：企业为“新设企业”（NewExist=1），通常新企业缺乏稳定的经营历史和财务记录，失败率较高，风险显著。
+- 员工规模：仅6名员工，属于小微企业，抗风险能力和资源调配能力有限。
+- 就业变动：创造岗位数和保留岗位数均为0，表明贷款未用于扩张或维持就业，可能反映企业增长动力不足或贷款用途偏离促进就业的初衷，动态稳定性较差。
+2. 贷款保障机制协同性评估
+- 贷款期限：64个月（约5.3年），期限适中，但新企业长期还款能力存在不确定性。
+- 担保比例：SBA担保比例为50%，银行承担剩余50%的风险，缓释措施部分覆盖。
+- 抵押标识：无房地产抵押（RealEstate=0），缺乏足值抵押物，违约损失风险较高。
+- 贷款额度：总批准额度5万美元，SBA担保2.5万美元，额度较小，但结合无抵押情况，保障机制薄弱。
+3. 行业-经济环境匹配度评估
+- 行业分类：NAICS代码532299（其他消费品租赁），属于租赁服务业，受消费需求波动影响大，行业竞争激烈，利润率可能较低。
+- 城乡属性：城市地区（UrbanRural=1），经济活力较高，但运营成本也可能更高。
+- 经济周期：申请时未处于经济衰退期（Recession=0），宏观环境尚可，但行业对经济敏感，抗周期性弱。
+4. 银行风控地域适配性评估
+- 银行地域：银行位于NC（北卡罗来纳州），而企业在CA（加利福尼亚州），跨州贷款可能导致银行对当地经济环境、市场状况了解不足，信息不对称风险增加。
+- 审批流程：批准日至放款日间隔33天，流程正常，但跨州可能导致贷后管理难度加大。
+- 贷款类型：为循环信贷（RevLineCr=Y），企业可反复支用，流动性风险较高；非低文档贷款（LowDoc=N），文件要求较完整，一定程度上降低了信息风险。`,
+                crossValidation: `【交叉验证】
+- 双向验证机制触发：
+  - 矛盾信号：企业为新设企业，员工规模小，却申请循环信贷（通常用于持续运营资金），但就业变动为0，表明贷款可能未用于实质性扩张，现金流可能紧张。同时，半年流水波动显示在第2个月冲高后缓慢下行，验证了经营动态不稳定，贷款使用后未能改善现金流。
+  - 风险叠加：无抵押 + 跨州贷款 + 新企业 + 行业波动性，多维度风险因素协同放大违约概率。
+- 事实指标与推测区分：
+  - 事实：员工数6人、无抵押、跨州、流水下行趋势等。
+  - 推测：基于行业特性、新企业高失败率、保障不足等，违约风险较高。`,
+                conclusion: `【综合判断】
+企业运营动态稳定性弱（新设、无就业增长）、贷款保障不足（无抵押、仅50%担保）、行业抗风险能力低、银行风控存在地域错配，且现金流呈下行趋势。尽管经济环境尚可，但多维度风险交叉验证表明企业还款能力存在重大疑问。此外，数据中MIS状态为“CHGOFF”（核销），核销本金47,211美元，事实已发生违约，进一步印证风险判断。
+因此，该企业存在违约风险。`
+            },
+            "1038956001": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性
+   - 存续状态：企业为已存续企业（NewExist=2），理论上稳定性优于新设企业。
+   - 员工规模：仅2名员工，属于微型企业，抗风险能力较弱。
+   - 就业变动：贷款项目未创造新岗位（CreateJob=0），仅保留2个现有岗位（RetainedJob=2），表明企业缺乏扩张动力，可能仅维持生存。
+   - 动态趋势：提供的半年流水数据显示持续下滑（从2,683.74降至1,844.75），反映企业经营状况恶化，现金流萎缩。综合判断，运营稳定性较差。
+
+2. 贷款保障机制协同性
+   - 贷款期限：76个月（约6.3年），期限较长，增加了还款期间的不确定性。
+   - 担保比例：SBA担保比例为50%（Portion=0.5），提供部分风险缓释，但银行仍承担50%风险。
+   - 抵押标识：无不动产抵押（RealEstate=0），缺乏足值抵押物，风险缓释不足。
+   - 贷款额度：总贷款额30,000美元，SBA担保15,000美元，额度虽小，但与企业规模（2人）相比仍可能构成较重负担。
+   - 协同性分析：无抵押、长期限与部分担保结合，保障机制较弱，银行依赖SBA担保而弱化自身风险审查。
+
+3. 行业-经济环境匹配度
+   - 行业分类：NAICS代码531210（房地产中介行业），对经济周期高度敏感，依赖房地产市场活跃度。
+   - 城乡属性：城乡分类为2（可能为农村），农村房地产市场规模有限，增长潜力较低。
+   - 经济周期：申请时不在经济衰退期（Recession=0），但批准财年为2006年，正值美国房地产泡沫顶峰转向期，行业下行风险积聚。
+   - 匹配度分析：行业面临周期性下行风险，企业流水持续下滑与此吻合，环境匹配度差。
+
+4. 银行风控地域适配性
+   - 银行地域：银行位于IL（伊利诺伊州），企业区域为VALENCIA（可能为加州），跨州经营可能导致信息不对称，银行对当地经济特征了解不足。
+   - 审批流程：批准到放款间隔75天，流程较长，可能反映审批环节谨慎，但也可能效率低下。
+   - 贷款类型：为循环信贷（RevLineCr=Y），但非低文档贷款（LowDoc=N），表明银行要求完整文档，但循环信贷可能增加信用风险暴露。
+   - 适配性分析：跨州贷款削弱了银行的地域适配性，风控策略可能未充分结合当地经济特征，风险较高。`,
+                crossValidation: `【交叉验证】
+- 矛盾信号：企业流水持续下滑，经营恶化，却获得循环信贷且无抵押，银行可能过度依赖SBA担保而放松信贷标准。
+- 行业与现金流联动：房地产中介行业下行与企业收入下滑相互印证，还款能力可能持续减弱。
+- 规模与期限错配：2人微型企业获得长期贷款，现金流可能难以覆盖长期债务。
+- 地理分散：银行跨州贷款，对企业实际经营状况监控难度大，加剧信息不对称。`,
+                conclusion: `【综合判断】
+企业运营稳定性差、贷款保障弱、行业环境不利、银行风控适配性不足，多个维度均指向高风险。尽管SBA提供部分担保，但无抵押、现金流下滑、行业周期性风险等关键因素叠加，违约概率高。历史结果（MIS状态为CHGOFF，核销本金29,700美元）证实了实际违约。`
+            },
+            "1045135004": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性
+- 存续状态：企业为新设企业（NewExist=2），经营历史短，抗风险能力较弱。
+- 员工规模：仅2名员工，规模极小，资源有限。
+- 就业变动：创造岗位和保留岗位均为0，表明贷款未能带动就业增长，可能反映业务扩张乏力或项目效果不佳。
+- 现金流动态：半年流水在正向1.2万与负向2.1万之间剧烈震荡，显示经营极不稳定，现金流管理存在严重问题。
+- 综合评估：运营稳定性极差，风险较高。
+
+2. 贷款保障机制协同性
+- 贷款期限：38个月，属于中期贷款，还款压力持续期较长。
+- 担保比例：SBA担保比例为50%，银行承担剩余50%的风险。
+- 抵押标识：无不动产抵押（RealEstate=0），风险缓释措施薄弱，违约后回收可能性低。
+- 贷款额度：总额1万美元，额度较小，但缺乏抵押物使风险敞口较大。
+- 协同性分析：无抵押与部分担保的组合，保障程度不足，难以覆盖潜在违约损失。
+
+3. 行业-经济环境匹配度
+- 行业分类：NAICS 531210（办公楼和商业建筑出租），行业受经济周期和商业活动影响显著。
+- 城乡属性：城市地区（UrbanRural=1），竞争激烈，成本可能较高。
+- 经济周期：申请时未处于经济衰退期（Recession=0），宏观环境尚可。
+- 匹配度分析：行业本身通常产生稳定现金流，但该企业流水剧烈波动，与行业特征背离，可能暗示出租率不稳定或经营管理问题，行业与环境匹配度较差。
+
+4. 银行风控地域适配性
+- 银行地域：银行位于北卡罗来纳州（NC），企业区域为WOODLAND（可能与银行州不一致），存在跨州经营可能，银行对当地经济熟悉度可能不足。
+- 审批流程：批准到放款间隔8天，流程较快，可能审查不够充分。
+- 贷款类型：为循环信贷（RevLineCr=T），非低文档贷款（LowDoc=N）。循环信贷增加了资金灵活性，但对于现金流不稳定的企业，容易导致债务累积和违约风险。
+- 适配性分析：银行风控策略与企业的现金流波动特征不匹配，循环信贷产品可能加剧风险。`,
+                crossValidation: `【交叉验证】
+- 矛盾信号验证：企业为新设企业，但创造岗位为0，且现金流剧烈波动，与非低文档贷款（要求完整文档）存在矛盾，可能表明文档未充分揭示真实风险。
+- 多维叠加风险：无抵押、现金流不稳定、循环信贷三者的叠加，显著提高了违约概率。行业现金流特征与企业实际表现的背离，进一步确认经营异常。
+- 最终状态佐证：MIS状态为核销（CHGOFF），核销本金9709美元，实际已发生违约，印证了上述风险分析的结论。`,
+                conclusion: `【综合判断】
+企业运营稳定性极差、贷款保障薄弱、行业匹配度低、银行风控适配性不足，且各维度风险信号相互强化，违约风险显著。因此，该企业存在违约风险。`
+            },
+            "1054835004": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1.  企业运营动态稳定性：
+       事实指标：存续状态（NewExist）为1，表明这是一家新设企业，天然具有较高的不确定性风险。员工数量（NoEmp）仅为2人，规模极小，抗风险能力弱。创造岗位（CreateJob）与保留岗位（RetainedJob）均为0，意味着本次贷款项目未带来任何就业增长或维持，暗示业务可能并未按预期扩张或稳定。
+       动态趋势：“半年流水波动”数据明确显示“整体呈下行波动，尤其是从第 4 个月起数值出现量级缩减”。这是企业经营状况急剧恶化的核心直接证据。
+       初步判断：运营稳定性极差。新设、微小规模、无就业创造且现金流严重萎缩，表明企业持续经营能力存在重大疑问。
+
+2.  贷款保障机制协同性：
+       事实指标：贷款期限（Term）为62个月（约5年），期限较长。担保比例（Portion）为0.5（即50%），是SBA贷款的标准比例。抵押标识（RealEstate）为0，表明无不动产抵押，风险缓释较弱。贷款总额（GrAppv）为10,000美元，SBA担保额（SBA_Appv）为5,000美元，金额较小。
+       协同性分析：对于一家新设的2人微型企业，申请一笔5年期的贷款，却没有提供任何房地产抵押，仅依赖SBA的信用担保，保障措施与企业的风险状况（新设、微小）匹配度不足。贷款金额虽小，但结合其运营数据，偿还能力依然堪忧。
+
+3.  行业-经济环境匹配度：
+       事实指标：行业代码（NAICS）为532299（其他消费品租赁），该行业通常对经济周期和消费者支出较为敏感。城乡属性（UrbanRural）为1（城市），竞争可能更激烈。经济周期（Recession）为0，申请时未处衰退期，宏观环境尚可。
+       匹配度分析：企业身处受消费波动影响的租赁行业，尽管宏观环境尚可，但其自身现金流（半年流水）却出现严重下滑，这凸显了企业个体经营问题远超行业周期影响，属于内因主导的风险。
+
+4.  银行风控地域适配性：
+       事实指标：银行所在州（BankState）为NC（北卡罗来纳），但企业区域在PICO RIVERA（通常指加州地区），存在明显的跨州业务，银行可能对当地微观经济和企业实际情况的掌握存在地理隔阂。审批（ApprovalDate）到放款（DisbursementDate）间隔约23天（16344-16321），流程正常。贷款类型为有循环信贷（RevLineCr=T）但非低文档贷款（LowDoc=N），信息透明度要求尚可。
+       适配性分析：大型银行（BANK OF AMERICA）处理跨州小额贷款时，可能存在风控模型标准化但对本地化、微观经营动态跟踪不足的问题。最终贷款被核销（MIS状态: CHGOFF）的结果，部分反映了风控与实际风险的脱节。`,
+                crossValidation: `【交叉验证】
+   验证1（运营与保障）：企业运营数据（新设、零就业增长、流水剧减）强烈预示还款困难，这与贷款保障措施（无抵押、长期限）的薄弱形成矛盾，放大了风险。银行可能在审批时未能充分获取或重视其早期经营恶化的信号。
+   验证2（行业与运营）：在非衰退期，企业流水却出现“量级缩减”，这与宏观环境背离，强烈指向企业自身存在严重的经营或管理问题，而非受外部经济冲击。这对于新企业是致命风险。
+   验证3（数据与结果）：所有分析维度的风险信号，与贷款的最终结果“MIS状态: CHGOFF”（已核销）及“核销本金总额: 4999”（几乎全额损失）的事实完全吻合，反向验证了前述分析的准确性。核销发生在放款后约2年（(17062-16344)/365 ≈ 2年），印证了在贷款中期因经营失败而违约。`,
+                conclusion: `【综合判断】
+综合四个维度的分析：
+1.  企业运营动态稳定性极差：新设、微小规模、现金流严重恶化，核心还款来源枯竭。
+2.  贷款保障机制不足以覆盖风险：长期限、无抵押，风险敞口大。
+3.  企业个体经营风险突出，抵消了相对稳定的宏观环境。
+4.  银行风控在跨州背景下，可能未能及时识别并响应企业急剧恶化的经营状况。
+各维度指标交叉验证，共同指向企业因自身经营失败导致偿还能力丧失。因此，该企业存在明确的、高概率的违约风险。最终贷款被核销的事实，确认了这一风险已转化为实际损失。`
+            },
+            "1077145001": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性评估：
+   存续状态 (NewExist=1)：该企业为新设企业。新企业通常缺乏稳定的经营历史、成熟的商业模式和充足的现金流，失败率显著高于存续企业，是重要的固有风险点。
+   员工规模 (NoEmp=12)：规模较小，抗风险能力有限。
+   就业变动 (CreateJob=0, RetainedJob=0)：贷款项目预计既不新增也不保留任何就业岗位。这与一般贷款用于扩张或维持运营的预期不符，可能暗示贷款用途并非用于积极的生产性投资，或业务模式本身对人力增长需求低，需警惕。
+   交叉验证与矛盾点：作为一家新成立的房地产开发公司（见行业分析），初始阶段通常需要人手进行项目开发、销售或管理，但就业变动数据为0，这与“稳步增长”的流水趋势（见报告末尾）形成轻微矛盾，需怀疑其业务真实增长动力或人员结构的合理性（如大量使用外包）。
+
+2. 贷款保障机制协同性评估：
+   贷款期限 (Term=67个月）：超过5年，属于中长期贷款。对于新企业而言，长期限增加了未来经营的不确定性，还款期内面临的市场、管理风险更高。
+   担保比例 (Portion=0.5)：SBA提供50%的担保，银行承担剩余50%的风险。担保覆盖度中等，未全覆盖。
+   抵押标识 (RealEstate=0)：无不动产抵押。这是极其关键的负面信号。对于一家名为“房地产发展公司”的企业，其核心资产或业务应紧密关联房地产，但贷款却无任何房地产抵押，严重削弱了第二还款来源的保障。这可能意味着公司名下并无实质产权，或资产已抵押他处，风险缓释严重不足。
+   贷款额度 (GrAppv=50000, SBA_Appv=25000)：额度较小。
+   交叉验证与矛盾点：“房地产公司”与“无房地产抵押”构成核心矛盾。结合其为新企业的事实，推测其可能为轻资产运营的房地产中介或项目管理公司，而非真正的开发商，业务稳定性和资产实力存疑。中长期限与中等担保比例的组合，在缺乏实物抵押的情况下，使得银行风险暴露较大。
+
+3. 行业-经济环境匹配度评估：
+   行业分类 (NAICS=531210）：对应“写字楼和商业楼宇的房地产中介及经纪”。该行业受宏观经济周期、房地产市场景气度影响巨大，收入波动性强。
+   城乡属性 (UrbanRural=1)：位于城市地区，市场竞争可能更为激烈。
+   经济周期 (Recession=0)：申请时未处于经济衰退期，宏观环境暂时有利。
+   交叉验证：行业属性（周期性、服务性）与“无房地产抵押”的事实相互印证，说明其确为轻资产服务型企业，资产实力弱，风险较高。尽管当时未处衰退期，但中长期贷款将穿越可能的经济周期波动。
+
+4. 银行风控地域适配性评估：
+   银行地域 (BankState=NC)：银行位于北卡罗来纳州，而企业区域在INGLEWOOD（通常指加州英格尔伍德），存在跨州业务。这可能影响银行对当地房地产市场和企业实际经营状况的深入了解与贷后监控效率。
+   审批流程 (ApprovalDate=16350, DisbursementDate=16375)：批准到放款间隔25天，属正常流程，无异常。
+   贷款类型 (RevLineCr=N, LowDoc=N)：非循环信贷，非低文档贷款。这意味着企业提供了相对完整的财务文档，流程较为规范。
+   交叉验证与矛盾点：跨州贷款与房地产这类高度地域化的行业结合，可能放大信息不对称风险。尽管文档齐全，但银行对异地市场风险的判断可能不足。`,
+                crossValidation: `【交叉验证】
+   核心风险链：新设企业 + 高风险周期性行业 + 无核心资产抵押 + 中长期限。这是风险高度集中的组合。企业运营根基不稳，行业波动大，贷款缺乏足值押品覆盖风险，且还款周期长。
+   数据矛盾深化分析：“半年流水呈现显著增长态势”这一信息，与“零就业创造/保留”形成反差。对于服务型房地产中介，业务增长通常伴随人手增加。此矛盾可能意味着：（1）流水增长可能来自少数大额交易，不具备持续性；（2）企业可能通过控制人力成本实现增长，但也可能掩盖了运营脆弱性；（3）需警惕流水数据的真实性与代表性。
+   事实指标与结果验证：报告中的“MIS状态: CHGOFF”（核销）和“核销本金总额: 50000”（全部本金损失）是确凿的违约事实，直接证实了上述风险分析的合理性。贷款最终被核销，说明所有缓释措施（50%担保）未能避免损失。`,
+                conclusion: `【综合判断】
+该企业信用风险极高。其新设身份、行业周期性风险、贷款保障严重不足（无抵押）构成了违约的坚实基础。跨州经营可能弱化了银行风控。尽管流水有增长趋势且经济环境尚可，但无法抵消其根本性的脆弱性。各维度风险信号高度一致且相互强化，最终违约事实也印证了此判断。`
+            },
+            "1101815002": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1.  企业运营动态稳定性（高风险）
+       事实指标：企业为已存续企业（\`NewExist\`=2），但员工规模极小，仅为1人（\`NoEmp\`=1）。贷款项目创造的岗位数为0（\`CreateJob\`=0），保留的岗位数也为0（\`RetainedJob\`=0）。半年流水处于中低水平波动，趋势不明显。
+       分析推测：企业虽非新设，但规模极其微小，抗风险能力天然薄弱。贷款项目未能带来任何就业增长（创造或保留岗位），这与贷款通常用于支持企业扩张或维持运营的目的相悖，强烈暗示企业经营活动停滞或项目未能按计划开展。中低水平的流水波动且无趋势，进一步印证了业务缺乏活力和增长动力。该维度显示企业运营高度不稳定，缺乏持续经营的有力证据。
+
+2.  贷款保障机制协同性（高风险）
+       事实指标：贷款期限为34个月（\`Term\`=34），属中期贷款。SBA担保比例为50%（\`Portion\`=0.5）。无不动产抵押（\`RealEstate\`=0）。批准总额（\`GrAppv\`）为10,000美元，SBA批准额（\`SBA_Appv\`）为5,000美元，但发放总额（\`DisbursementGross\`）为12,750美元。
+       分析推测与双向验证：50%的担保比例提供了部分风险缓释，但缺乏抵押物（房地产）作为第二还款来源，增加了银行的敞口风险。一个关键的数据矛盾点是：发放总额（12,750美元）显著高于批准总额（10,000美元）。这触发了强制约束中的双向验证机制。此矛盾可能意味着在批准后追加了贷款、存在费用资本化或数据错误，但无论如何，这表明贷款发放环节的管控可能存在疏漏或不一致，增加了贷款资金使用的不确定性。贷款额度与微小企业规模（1名员工）的匹配度也值得怀疑。
+
+3.  行业-经济环境匹配度（中高风险）
+       事实指标：行业代码531210（办公用品和文具店）。位于城市地区（\`UrbanRural\`=1）。申请时未处于经济衰退期（\`Recession\`=0）。
+       分析推测：办公用品零售业（531210）竞争激烈，利润率较薄，易受经济波动和消费习惯变化（如线上采购）影响。城市地区虽市场较大，但竞争也更激烈。虽不处于衰退期，但行业本身的挑战性较高。企业规模极小，在竞争中处于明显劣势。
+
+4.  银行风控地域适配性（中风险）
+       事实指标：银行位于北卡罗来纳州（\`BankState\`=NC），而企业位于“STUDIO CITY”（通常指加州地区），存在地理距离。从批准到放款（\`ApprovalDate\`至\`DisbursementDate\`）间隔约82天，时间较长。非循环信贷（\`RevLineCr\`=N），非低文档贷款（\`LowDoc\`=N）。
+       分析推测：银行与借款人所在地不同，可能影响贷后管理的及时性和有效性。较长的审批-放款间隔（82天）可能反映了流程复杂性或内部审议，但也可能意味着企业情况或市场环境在期间发生了变化。非低文档贷款意味着进行了相对完整的尽调，但结合其他维度的风险，尽调结论的有效性存疑。`,
+                crossValidation: `【交叉验证】
+   核心矛盾：一个至关重要的事实指标 \`MIS_Status\`为“CHGOFF”（核销），\`ChargeOffDate\`和\`ChargeOff-Principal\`（核销本金8415美元）均有数据，直接证明此笔贷款已发生违约并核销。这反向验证了上述各维度分析中指出的高风险信号是真实且最终导致了坏账。
+   逻辑关联：企业运营停滞（0岗位变化）、微小规模与申请一笔中期贷款的目的之间存在逻辑断裂。贷款保障机制的数据矛盾（发放额>批准额）与最终坏账结果形成呼应，暗示了从审批到发放再到贷后管理的整个风控链条可能存在问题。
+   忽视点：尽管已知结果，但从申请时点看，最易被单一维度分析忽略的是：在非衰退期、有SBA担保的“安全表象”下，企业基本面的极度脆弱性（1人公司、0就业贡献） 是压倒性的根本风险，任何外部支持和标准流程都难以弥补。`,
+                conclusion: `【综合判断】
+基于申请时的多维度数据分析，企业运营极不稳定，贷款保障存在数据矛盾且缺乏强抵押，行业环境挑战大，银行风控存在地理和流程上的潜在弱点。各维度风险信号高度一致且相互强化。即使在不预先知道最终核销结果的情况下，仅基于申请数据，该企业也显示出极高的违约风险。已知的核销事实（\`MIS_Status\`=CHGOFF）是最终的风险证实。`
+            },
+            "1106844003": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性
+- 存续状态：该企业为新设企业（NewExist=1），缺乏历史经营记录，通常意味着较高的不确定性风险。
+- 员工规模：员工数量为30人，属于中等规模，表明企业具备一定的运营基础。
+- 就业变动：创造岗位和保留岗位数均为0，表明贷款并非用于扩张或维持就业，可能用于资产购置等目的，需关注贷款用途与现金流生成的匹配性。
+- 动态评估：新企业本身稳定性较弱，但员工规模尚可，动态稳定性中等偏弱。需结合现金流情况进一步分析。
+
+2. 贷款保障机制协同性
+- 贷款期限：300个月（25年），期限很长，通常匹配长期资产投资。
+- 担保比例：SBA担保比例为75%，覆盖大部分贷款风险，银行风险暴露较低。
+- 抵押标识：有不动产抵押（RealEstate=1），进一步增强了风险缓释。
+- 贷款额度：总批准金额150,500美元，SBA担保112,875美元，额度适中。
+- 协同性评估：长期限与房地产抵押匹配，高担保比例降低了银行风险，保障机制较强。
+
+3. 行业-经济环境匹配度
+- 行业分类：NAICS代码532111（乘用车租赁行业），该行业对经济周期敏感，竞争激烈，但经济向好时需求可能较强。
+- 城乡属性：企业位于城市地区（UrbanRural=0，HEMET为加州城市），目标市场相对集中。
+- 经济周期：申请时未处于经济衰退期（Recession=0），宏观经济环境有利。
+- 匹配度评估：行业风险受经济波动影响，但当前经济环境支持，匹配度中等。
+
+4. 银行风控地域适配性
+- 银行地域：银行位于CA州，与企业所在地一致，有利于银行了解地方经济状况，地域适配性好。
+- 审批流程：批准日期与发放日期间隔83天，流程较长，可能表明银行审查严谨或企业满足条件耗时，但最终放款，未出现异常。
+- 贷款类型：非循环信贷、非低文档贷款（RevLineCr=0, LowDoc=N），表明银行进行了充分尽职调查，信息透明度较高。
+- 适配性评估：银行风控措施与地域特征匹配，流程规范，适配性良好。`,
+                crossValidation: `【交叉验证】
+- 双向验证机制启动：
+  - 矛盾点1：新企业（高风险）却获得长期限、高担保贷款。验证：企业有房地产抵押，且SGA担保比例高，银行风险缓释充分，矛盾部分缓解。
+  - 矛盾点2：半年流水前5个月平稳，第6个月跳跃式增长，与新企业通常增长曲线不符。验证：需核查增长是否可持续（如季节性因素或一次性收入），若不可持续可能影响还款能力，但贷款有抵押和担保，降低了风险。
+  - 矛盾点3：就业变动为0，但贷款额度用于长期资产，可能产生现金流而非直接就业，需评估资产盈利能力。验证：汽车租赁行业需要场地和车辆，房地产抵押可能为经营场所，若能产生稳定租金收入或运营效率提升，则合理。
+- 潜在风险点：
+  - 新企业经营不确定性高，现金流跳跃增长需关注可持续性。
+  - 汽车租赁行业受经济周期影响大，长期限贷款面临宏观波动风险。
+  - 但风险缓释措施（高比例担保、房地产抵押）显著降低了银行实际风险暴露。`,
+                conclusion: `【综合判断】
+尽管新企业存在一定运营不确定性，且行业具有周期性风险，但贷款保障机制协同性强（高担保比例、不动产抵押），银行风控地域适配性良好，且经济环境有利。交叉验证后，风险缓释措施足以覆盖潜在违约损失。同时，最终MIS状态显示贷款已全额还清（P I F），从结果验证了风险可控。因此，综合评估该企业不存在违约风险。`
+            },
+            "1113545001": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性
+- 存续状态：企业为新设（NewExist=1），缺乏经营历史，失败率通常较高。
+- 员工规模：仅8名员工，属于小微企业，抗风险能力弱。
+- 就业变动：创造岗位和保留岗位均为0，表明贷款未用于扩张或稳定就业，可能反映企业增长动力不足。
+- 现金流动态：半年流水呈高位震荡后回落，且在第3个月达峰后持续走低，显示企业经营现金流恶化，还款能力存疑。
+- 小结：该维度风险信号强烈，新设企业现金流下滑且无就业创造，运营稳定性差。
+
+2. 贷款保障机制协同性
+- 贷款期限：84个月（7年），期限较长，不确定性增加。
+- 担保比例：SBA担保比例50%（Portion=0.5），部分缓释风险。
+- 抵押标识：无不动产抵押（RealEstate=0），贷款为信用贷款，违约后回收难度大。
+- 贷款额度：总贷款额10万美元，SBA担保5万美元，额度相对适中。
+- 小结：无抵押是显著风险点，尽管有SBA担保，但风险缓释措施覆盖不足，协同性一般。
+
+3. 行业-经济环境匹配度
+- 行业分类：NAICS 532490（其他消费品租赁），行业对经济周期敏感，需求波动较大。
+- 城乡属性：城市地区（UrbanRural=1），市场竞争激烈但机会较多。
+- 经济周期：非经济衰退期（Recession=0），宏观环境有利。
+- 小结：行业风险中等，宏观环境正面，但需关注行业周期性风险。
+
+4. 银行风控地域适配性
+- 银行地域：银行位于VA州，企业位于CA州，跨州贷款可能增加信息不对称，但银行为全国性机构（CAPITAL ONE NATL ASSOC），部分抵消该风险。
+- 审批流程：批准至放款间隔66天，流程正常，未见异常延迟。
+- 贷款类型：非循环信贷、非低文档贷款（RevLineCr=N, LowDoc=N），要求完整文档，风控较规范。
+- 小结：跨州带来一定适配性风险，但贷款类型规范，整体风险中性。`,
+                crossValidation: `【交叉验证】
+- 矛盾点1：新企业现金流下降，却申请长期贷款（84个月），且无就业创造。贷款用途可能与实际经营需求不匹配，可能存在过度融资或经营困境。
+- 矛盾点2：无抵押贷款依赖SBA担保，但银行跨州经营，可能对企业真实经营状况把握不足，尽管文档要求完整，仍存在信息不对称风险。
+- 特许经营因素：特许经营代码为1（可能为特许经营），通常带来商业模式支持，但新设特许经营仍面临现金流下降的挑战，未能完全抵消风险。`,
+                conclusion: `【综合判断】
+企业运营动态稳定性风险突出（新设、现金流下滑、无就业创造），贷款保障不足（无抵押），行业周期性敏感，银行跨州经营增加信息不对称。虽有SBA担保和非低文档等缓和因素，但现金流下降直接威胁还款能力，违约风险较高。`
+            },
+            "1115215000": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性评估
+   存续状态：\`NewExist=1\`，表明这是一家新设企业，其经营模式和现金流稳定性未经市场长期验证，先天风险较高。
+   员工规模与就业变动：员工数量\`NoEmp=12\`，但创造与保留岗位数（\`CreateJob=0\`, \`RetainedJob=0\`）均为零。这形成关键矛盾：作为新企业，贷款未带来任何就业增长或维持，暗示其业务扩张计划可能落空或经营陷入停滞，未能实现预期发展动态。
+
+2. 贷款保障机制协同性评估
+   担保与抵押：SBA担保比例\`Portion=0.5\`（即50%），提供了部分风险缓释。但\`RealEstate=0\`表明无不动产抵押，第二还款来源薄弱。
+   贷款额度与期限：总贷款额\`GrAppv=50000\`美元，期限\`Term=33\`个月。担保覆盖了一半额度，但结合无抵押物的情况，整体保障机制强度一般。
+
+3. 行业-经济环境匹配度评估
+   行业属性：\`NAICS=531210\`（办公用房地产租赁商）。该行业受宏观经济和商业活动景气度影响大，现金流波动性可能较高。
+   地域与经济周期：\`UrbanRural=1\`（城市），\`Recession=0\`（非衰退期）。申请时外部环境无重大不利冲击，但行业自身周期风险仍需关注。
+
+4. 银行风控地域适配性评估
+   地域与流程：\`BankState=VA\`（弗吉尼亚州），而企业位于加州橙县（区域：Orange），存在跨州业务，可能影响银行对本地风险的认知和管理效率。审批到放款间隔\`DisbursementDate\`(16436) - \`ApprovalDate\`(16405) = 31天，流程正常。\`RevLineCr\`和\`LowDoc\`均为“N”，非特殊高风险贷款类型。`,
+                crossValidation: `【交叉验证】
+   双向验证触发点：
+       信号：员工数为12人，规模不小。矛盾点：作为新企业，贷款项目未创造和保留任何就业（创造0，保留0）。这强烈暗示贷款资金可能并未按计划用于积极业务扩张，而是可能用于维持生存或填补初始亏损，预示经营状况远不及预期。
+       核心事实指标：\`MIS_Status=CHGOFF\`（贷款已核销），\`ChgOffDate=18063.0\`（有核销日期），\`ChgOffPrinGr=38832\`（核销本金）。这是违约已发生的最终事实，必须以此为核心反向检验前述风险分析的准确性。
+   时间线与损失验证：
+       从发放日(\`DisbursementDate\`: 16436)到核销日(\`ChgOffDate\`: 18063.0)相隔约627天（约20.7个月），早于33个月的贷款期限，表明企业在还款期过半前就已无法履约。
+       核销本金38,832美元，相对于批准总额50,000美元，损失率高达77.66%，确认了重大违约损失。
+   综合风险画像：一家处于对经济周期敏感行业（办公地产租赁）的新设企业，在获得贷款后未能实现任何就业增长目标，且在缺乏足值抵押物的情况下，于贷款发放后不到两年内发生实质性违约，导致银行蒙受重大损失。其运营稳定性（新设、零就业创造）与最终违约结果高度一致。`,
+                conclusion: `【综合判断】
+尽管分析框架中的部分指标（如非衰退期、非低文档贷款）未显示极端风险，但最关键的事实指标（\`MIS_Status=CHGOFF\`）已明确给出了违约的最终结果。前述维度分析（如新企业零就业增长、行业特性、保障不足等）恰好构成了导致这一违约结果的合理风险路径解释。因此，该企业不仅“存在”违约风险，而且已经“发生”了实际违约。`
+            },
+            "1118365005": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性分析：
+   - 存续状态： \`NewExist:1\`，表明这是一家新设企业。这是核心风险点，新企业缺乏经历史验证的商业模式、盈利记录和抗风险能力，失败率通常高于存续企业。
+   - 员工规模： \`NoEmp:3\`，为微型企业，经营规模和人力资源基础非常薄弱。
+   - 就业变动： \`CreateJob:0\`，\`RetainedJob:0\`。贷款项目未创造新岗位，也未明确保留现有岗位，这与通常期望贷款促进企业成长或稳定的目的不符。结合其为新设企业，可能表明其业务尚在起步阶段，增长前景不明朗或贷款用途并非用于扩张。
+   - 小结： 此维度风险极高。新设、微型的特质，叠加缺乏就业增长动力的信号，表明企业运营的动态稳定性非常脆弱。
+
+2. 贷款保障机制协同性分析：
+   - 贷款期限： \`Term:84\`个月（7年），属中长期贷款。对新设企业而言，长期限意味着更长的经济周期暴露和经营不确定性考验。
+   - 担保与抵押： \`SBA_Guarantee:0.5\`，即SBA提供50%担保，风险共担机制存在。但\`RealEstate:0\`，表明无不动产抵押。风险缓释主要依赖于政府信用（SBA担保），缺乏来自企业方的强资产抵押，第二还款来源保障力度中等偏弱。
+   - 贷款额度： \`GrAppv:50000\`, \`SBA_Appv:25000\`。额度适中，但SBA担保覆盖了一半的敞口。
+   - 小结： 保障机制存在但协同性有缺陷。中长期限匹配新设企业是风险错配，且缺乏硬资产抵押，过度依赖SBA担保。一旦企业经营失败，银行回收贷款存在一定不确定性。
+
+3. 行业-经济环境匹配度分析：
+   - 行业分类： \`NAICS:531311\`（房地产租赁代理）。该行业收入与房地产交易活跃度、租赁市场景气度高度相关，对宏观经济周期（利率、就业、消费者信心）敏感度较高。
+   - 城乡属性： \`UrbanRural:1\`（城市）。城市市场竞争通常更激烈，但机会也可能更多。
+   - 经济周期： \`Recession:0\`，申请时未处于官方定义的经济衰退期，宏观环境尚可。
+   - 交叉验证风险点： 在非衰退期，一个新设的、仅3人的房地产中介申请5万美元中长期贷款，需审视其商业计划的可行性和市场切入策略。行业周期性风险与“新设企业”的固有风险产生叠加效应。
+   - 小结： 行业特性决定了其面临一定的周期性风险，与企业自身的高初创风险叠加，需谨慎评估。
+
+4. 银行风控地域适配性分析：
+   - 银行地域： \`BankState:NC\`（北卡罗来纳州）。企业所在区域为“APPLE VALLEY”（通常指加州等地），银行与企业可能跨州。这可能导致银行对当地微观市场（如加州特定区域的房地产市场）的了解不够深入，增加信息不对称风险。
+   - 审批流程： \`ApprovalDate:16408\`与\`DisbursementDate:16436\`间隔约28天，流程正常，无异常延迟。
+   - 贷款类型： \`RevLineCr:Y\`，此为循环信贷。这增加了银行的风险暴露，因为企业可以随借随还，债务余额可能波动，且银行需要持续监控其信用状况。\`LowDoc:N\`（非低文档贷款），表明企业提供了相对完整的财务文件，这降低了因信息不足误判的风险。
+   - 小结： 跨州经营与循环信贷特性是主要风险关注点。前者涉及地域适配性问题，后者要求持续的风险监控能力。`,
+                crossValidation: `【交叉验证】
+- 关键矛盾信号： 企业作为“新设”的“房地产中介”，申请“中长期”的“循环信贷”，但“未创造/保留岗位”，且“现金流（半年流水）经历先降后升的波动”。这几点之间存在逻辑张力：
+  1.  新设企业 + 中长期贷款 + 现金流波动： 新企业通常需要时间稳定现金流，但中长期贷款要求其具备持续稳定的还款能力，现金流初期的波动性与此要求相悖。
+  2.  循环信贷 + 低员工数 + 无岗位创造： 循环信贷常用于运营资金周转，但企业规模极小且无扩张迹象，其运营资金需求的真实性和可持续性存疑。
+  3.  行业风险 + 无抵押： 身处周期性较强的房地产服务业，却无任何不动产抵押来缓释下行风险，使贷款结构在经济下行时更为脆弱。
+- 潜在风险点： 上述交叉分析揭示，单一维度已显示风险（如新设、无抵押），但组合起来风险被放大：一个跨州银行向一个处于周期性行业、现金流不稳、缺乏资产抵押的新设微型企业，提供了一笔中长期循环信贷。虽然SBA提供了50%担保，但银行自身承担的2.5万美元敞口，在面对多重不利因素叠加时，违约概率显著升高。`,
+                conclusion: `【综合判断】
+尽管该贷款拥有SBA 50%的担保、非低文档流程以及当前非衰退的宏观环境等有利因素，但企业核心的、内生的运营风险（新设、微型、现金流不稳） 过于突出，且与贷款结构风险（中长期、循环信贷、无抵押） 及行业周期性风险形成了不利共振。这些因素的综合作用，使得企业未来经营的持续性和还款能力面临高度不确定性，违约风险显著。`
+            },
+            "1122665004": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1、企业运营动态稳定性评估
+- 存续状态：该企业为新设企业（NewExist=1），缺乏经营历史，生存风险较高。
+- 员工规模：仅2名员工，规模极小，抗风险能力和资源调配能力弱。
+- 就业变动：创造岗位和保留岗位均为0，表明贷款未带来就业增长或稳定，可能反映业务扩张动力不足或经营静态。
+结论：运营稳定性差，风险较高。
+
+2、贷款保障机制协同性评估
+- 贷款期限：仅4个月，期限极短，还款压力集中，对现金流要求高。
+- 担保比例：SBA担保比例为50%，提供部分风险缓释，但覆盖程度有限。
+- 抵押标识：无不动产抵押（RealEstate=0），缺乏足额抵押物，第二还款来源缺失。
+- 贷款额度：总批准额12000美元，SBA担保6000美元，额度较小，但相对于企业规模（员工2人、流水规模小）仍可能构成较大负担。
+结论：保障机制存在明显短板，期限短、无抵押与担保比例协同性不足，风险缓释效果有限。
+
+3、行业-经济环境匹配度评估
+- 行业分类：NAICS代码532299（所有其他消费品租赁），属于租赁行业，可能具有季节性波动，但经济衰退期风险可控。
+- 城乡属性：城市地区（UrbanRural=1），市场竞争激烈，但需求相对集中。
+- 经济周期：申请时未处于经济衰退期（Recession=0），宏观环境有利。
+结论：行业与经济环境匹配度中等，但行业特性可能导致现金流不稳定。
+
+4、银行风控地域适配性评估
+- 银行地域：银行位于NC州，而企业在CA州（区域TULARE），跨州经营可能带来信息不对称，增加地域风险。
+- 审批流程：批准至放款间隔23天，流程正常，无明显延迟。
+- 贷款类型：非循环信贷、非低文档贷款（RevLineCr=N, LowDoc=N），文档要求完整，降低了信息缺失风险。
+结论：银行跨州放贷带来潜在适配性问题，但流程和文档要求部分抵消了该风险。`,
+                crossValidation: `【交叉验证】
+1. 矛盾信号验证：企业为新设且规模小，通常被视为高风险，但未申请低文档贷款，提供了完整文档，这一矛盾可能掩盖了实际经营脆弱性。结合半年流水波动小（1100-1300美元），但流水规模远低于贷款额（12000美元相当于约10个月流水），短期还款能力不足。
+2. 期限与现金流匹配：4个月贷款期限要求快速回款，而企业流水稳定但规模小，难以在短期内积累足够还款资金。
+3. 地域与行业交互：跨州银行可能不熟悉当地租赁市场细节，叠加行业季节性，加剧了现金流预测偏差风险。
+4. 最终结果印证：MIS状态为CHGOFF（核销），实际已发生违约，佐证了上述风险分析的合理性。`,
+                conclusion: `【综合判断】
+综上所述，该企业在运营稳定性、贷款保障协同性及银行地域适配性方面均存在显著风险点，行业环境虽正常但不足以抵消企业内生脆弱性。交叉验证进一步揭示了现金流与还款期限的严重错配。因此，该企业存在明确的违约风险。`
+            },
+            "1122875008": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1. 企业运营动态稳定性评估
+   事实指标：\`NewExist=1\`（新设企业）；\`NoEmp=2\`（仅2名员工）；\`CreateJob=0\`， \`RetainedJob=0\`（贷款项目未创造或保留任何就业岗位）。
+   分析与推测：该企业为新设公司，缺乏历史经营记录和财务数据验证，天然具有较高的不确定性风险。员工规模极小，表明其运营基础薄弱，抗风险能力有限。最关键的风险信号是，贷款项目预计带来的新增和保留就业岗位均为零。这与SBA贷款通常旨在支持或扩大就业的政策目标相悖，强烈暗示该笔贷款可能并非用于可创造收入的积极经营活动，或业务规划极为保守/不清晰，对未来增长缺乏信心。
+
+2. 贷款保障机制协同性评估
+   事实指标：\`Term=84\`个月（7年，期限较长）；\`Portion=0.5\`（SBA担保50%）；\`RealEstate=0\`（无不动产抵押）；\`GrAppv=11000\`， \`SBA_Appv=5500\`（贷款总额较小）。
+   分析与推测：贷款期限长达7年，对于一个新设、微型企业而言，还款周期过长，期间不确定性高。SBA提供了50%的担保，分担了部分风险。然而，关键的风险缓释措施缺失：作为一家房地产相关公司（\`NAICS=531210\`，房地产租赁），其贷款申请没有不动产抵押（\`RealEstate=0\`），这构成重大的保障缺陷。这不符合行业常规操作，可能意味着企业缺乏可抵押资产，或贷款用途与核心资产无关，增加了银行的第二还款来源风险。贷款额度虽小，但结合零就业创造，其资金使用的合理性和效益存疑。
+
+3. 行业-经济环境匹配度评估
+   事实指标：\`NAICS=531210\`（房地产租赁）；\`UrbanRural=2\`（城市地区）；\`Recession=0\`（非经济衰退期）。
+   分析与推测：企业处于房地产租赁行业，其现金流高度依赖物业出租率和租金水平。在非衰退期的城市地区，市场环境相对有利。但需交叉验证：新设的房地产租赁公司，仅有2名员工，在无抵押的情况下申请贷款，其商业模式（是持有物业出租还是轻资产运营？）和初始资本投入的充足性值得怀疑。行业环境本身不构成直接风险，但与企业自身的微小规模和新设状态结合看，其把握行业机会的能力较弱。
+4. 银行风控地域适配性评估
+   事实指标：\`BankState=NC\`（银行在北卡罗来纳州）；\`ApprovalDate=16413\`， \`DisbursementDate=16587\`（间隔约174天，近6个月，间隔较长）；\`RevLineCr=Y\`（是循环信贷）；\`LowDoc=N\`（非低文档贷款）。
+   分析与推测：银行（BANK OF AMERICA）与企业在不同州（企业位于MAMMOTH LAKES，推测为CA），可能存在对当地特定市场（如加州Mammoth Lakes的度假租赁市场）了解不足的信息不对称风险。从批准到放款耗时近半年，这一间隔异常漫长，通常意味着审批流程中存在核查、补充材料或其它延误，这可能本身就是风险识别的结果。贷款为循环信贷，增加了额度被灵活使用而难以监控的风险。所幸“低文档贷款”为否，意味着银行要求了相对完整的财务文档，这是一个正面因素。`,
+                crossValidation: `【交叉验证】
+1.  核心矛盾（保障 vs 运营）：一家新设的房地产租赁公司，申请贷款却无任何房地产抵押。这一矛盾触发了“双向验证机制”。可能的解释包括：企业本身不持有物业，而是从事轻资产的中介管理服务；或贷款用于非核心资产的运营支出。无论哪种，都削弱了贷款与核心资产绑定的安全性，并与行业常规风险缓释逻辑不符。
+2.  目的与效果矛盾：贷款项目预期就业创造为零，这与SBA支持中小企业成长、促进就业的宏观目标存在根本性矛盾，暗示贷款用途可能并非用于积极业务扩张，或企业主对项目前景极度不乐观。
+3.  现金流动态与贷款期限错配：报告中提及“半年流水波动:呈现明显的抛物线走势，中期达到最高点后，后两月数据快速回落”。这对于一笔长达84个月的贷款而言，是一个强烈的预警信号。它表明企业的经营现金流极不稳定，且近期呈现恶化趋势。长期贷款的偿还依赖于持续稳定的现金流，而该企业的现金流模式无法提供这种确定性，违约风险显著升高。`,
+                conclusion: `【综合判断】
+综合以上四个维度的分析：
+   运营层面：企业为新设、微型规模，且贷款项目无任何就业创造预期，经营稳定性和增长性均存疑。
+   保障层面：关键风险缓释措施（房地产抵押）缺失，与行业属性严重不符，贷款保障薄弱。
+   流程与环境层面：银行跨州经营、审批放款间隔异常，增加了操作与信息风险；尽管行业与经济环境尚可，但无法抵消企业自身的根本性弱点。
+   交叉验证：揭示了“无抵押房地产贷款”与“现金流快速回落”这两个致命弱点。现金流的不稳定和下滑趋势，直接威胁其长期还款能力。
+所有信号均指向高风险特征。尽管该贷款在历史记录中显示为“P I F”（已全额偿还），但仅基于申请时的数据和分析框架进行评估，其当时存在的违约风险非常高。`
+            },
+            "2481565005": {
+                thinking: `根据风险分析框架，对该企业多维度数据进行分析与评估：
+1.  企业运营动态稳定性分析
+       事实指标：\`NewExist\`为1，表明是一家新设企业；\`NoEmp\`为2，员工规模极小；\`CreateJob\`为0，\`RetainedJob\`为2，表明贷款并未创造新岗位，仅用于维持现有2名员工的运营。
+       风险推测：作为新设企业，其经营历史短、商业模式和现金流未经考验，本身具有较高的不确定性。微小规模使其抗风险能力极弱。贷款用途仅限于“维持”而非“扩张”，动态增长性不足，稳定性基础薄弱。此维度风险极高。
+
+2.  贷款保障机制协同性分析
+       事实指标：\`Term\`为90个月（7.5年），属长期贷款；\`Portion\`为0.85，SBA担保比例很高；\`RealEstate\`为0，无不动产抵押；\`GrAppv\`与\`SBA_Appv\`分别为25000和21250美元，为小额贷款。
+       风险推测：高担保比例将主要风险转移至SBA，但缺乏房地产抵押物（尤其是对于一家房地产服务公司而言）使得第一还款来源保障不足。长期限贷款与一家新设、微小企业的生存周期和现金流预测能力存在严重错配。保障机制存在结构性缺陷：风险过度依赖政府担保，而缺乏足额自有资产抵押，且期限错配。
+
+3.  行业-经济环境匹配度分析
+       事实指标：\`NAICS\`为531210（房地产租赁中介服务）；\`UrbanRural\`为1（城市地区）；\`Recession\`为0（申请时非官方定义的衰退期），但批准财年为2007年。
+       风险推测：2007年是美国房地产泡沫破裂、次贷危机开端的关键年份。该企业主业高度依赖房地产交易市场的活跃度，在行业下行周期起点申请贷款，面临巨大的系统性行业风险。城市地区通常对房地产波动更为敏感。尽管\`Recession\`指标为0，但宏观环境与行业趋势已严重恶化。此维度风险极高，且存在数据（Recession=0）与宏观事实（2007年房地产危机）的显著矛盾，需启动二次核查。 报告中的“半年流水波动”可能已反映出业务的不稳定性。
+
+4.  银行风控地域适配性分析
+       事实指标：\`BankState\`为OR（俄勒冈州），而企业位于加利福尼亚州的Chula Vista，属于跨州业务。\`ApprovalDate\`与\`DisbursementDate\`间隔约32天，流程正常。\`RevLineCr\`和\`LowDoc\`均为N，表明是普通定期贷款且文档要求齐全。
+       风险推测：银行对非本州（尤其是距离较远、经济环境迥异的加州）小微企业的实地尽调和持续监控可能存在困难，对当地（加州）即将爆发的房地产危机严重性可能认识不足或反应滞后。虽然贷款流程和文档规范，但风控策略未能充分识别和应对跨州经营带来的地域信息不对称风险，以及未能前瞻性评估目标区域（加州）的行业集中度风险。`,
+                crossValidation: `【交叉验证】
+   核心矛盾点：一家于2007年（房地产危机前夕）新成立的、仅有2名员工的房地产服务公司，获得了无抵押的长期贷款。银行和SBA的风控逻辑严重依赖高比例担保，而忽视了最根本的行业周期风险和企业生存能力风险。
+   风险传导链条：宏观行业衰退（环境匹配度）→ 新设微小企业收入锐减（运营稳定性）→ 无抵押物导致银行处置手段有限（保障机制）→ 跨州银行可能未能及时干预（风控适配性）。各维度风险并非独立，而是形成了强化违约可能性的链条。
+   关键数据验证：最终结果数据\`MIS_Status\`为\`CHGOFF\`（核销），\`ChargeOff Date\`和\`ChargeOff Amount\`均有具体值，从事实上确认了该笔贷款已发生违约并核销。这反向验证了上述各维度风险分析的合理性。`,
+                conclusion: `【综合判断】
+该企业在申请贷款时，已在运营稳定性、贷款保障结构、行业环境匹配度及银行风控策略适配性上存在多重、关联的高风险特征。这些风险在随后的房地产危机中被触发并放大，最终导致违约。`
+            }
+        };
+
+        // 全局变量：存储完整的客户数据
+        let allCustomerRows = [];
+        let filteredCustomerRows = [];
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePageState();
+            
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    if (tabId === 'tab1') {
+                        activateTab(tabId);
+                        setMainTabActive(this);
+                    } else {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        maintainRiskViewActive();
+                        console.log(`点击了${this.textContent.trim()}，页面保持显示风险视图`);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.sub-tab-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const subtabId = this.getAttribute('data-subtab');
+                    
+                    if (subtabId === 'subtab1') {
+                        activateSubTab(subtabId);
+                        setSubTabActive(this);
+                    } else {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        maintainRiskAssessmentActive();
+                        console.log('点击了预警处理下发，页面保持显示风险评估生成');
+                    }
+                });
+            });
+            
+            initializeHistogram();
+            initializeCustomerTable();
+            initializeQueryFunction();
+        });
+        
+        function initializeHistogram() {
+            const maxValue = 22;
+            const maxHeight = 77;
+            
+            const largeHeight = (maxHeight * 20 / maxValue);
+            document.getElementById('large-enterprise-bar').style.height = largeHeight + 'px';
+            document.getElementById('large-count-bar').style.height = largeHeight + 'px';
+            
+            const smallHeight = (maxHeight * 17 / maxValue);
+            document.getElementById('small-enterprise-bar').style.height = smallHeight + 'px';
+            document.getElementById('small-count-bar').style.height = smallHeight + 'px';
+            
+            document.getElementById('rule-enterprise-bar').style.height = (maxHeight * 13 / maxValue) + 'px';
+            document.getElementById('rule-count-bar').style.height = (maxHeight * 22 / maxValue) + 'px';
+        }
+        
+        // 初始化客户评估表格 - 根据客户信息1.xlsx附件更新客户名称和区域
+        function initializeCustomerTable() {
+            const tableBody = document.getElementById('customerTableBody');
+            tableBody.innerHTML = '';
+            
+            allCustomerRows = [];
+            
+            for (let i = 0; i < customerData.length; i++) {
+                const customer = customerData[i];
+                // 根据客户编码设置是否预测违约状态
+                // 只有三个客户编码为"否"，其他全部为"是"
+                const noRiskCodes = ["1004535010", "1005005006", "1106844003"];
+                const predictDefault = noRiskCodes.includes(customer.code) ? "否" : "是";
+                const statusClass = predictDefault === "是" ? "status-yes" : "status-no";
+                
+                const row = document.createElement('tr');
+                row.setAttribute('data-code', customer.code);
+                // 移除多余的空白字符，确保列之间没有额外的空格
+                row.innerHTML = 
+                    `<td>${customer.name}</td>` +
+                    `<td>${customer.code}</td>` +
+                    `<td>${customer.region}</td>` +
+                    `<td>${customer.industry}</td>` +
+                    `<td>${customer.scale}</td>` +
+                    `<td><span class="status-tag ${statusClass}">${predictDefault}</span></td>` +
+                    `<td><button class="detail-btn" onclick="openDetailModal('${customer.code}', '${customer.name}')">详情</button></td>` +
+                    `<td>2026-2-5</td>`;
+                
+                allCustomerRows.push({
+                    element: row,
+                    code: customer.code,
+                    name: customer.name,
+                    region: customer.region,
+                    industry: customer.industry,
+                    companyScale: customer.scale,
+                    predictDefault: predictDefault
+                });
+                
+                tableBody.appendChild(row);
+            }
+            
+            filteredCustomerRows = [...allCustomerRows];
+        }
+        
+        // 初始化查询功能
+        function initializeQueryFunction() {
+            const queryButton = document.getElementById('queryButton');
+            const resetButton = document.getElementById('resetButton');
+            const enterpriseCodeInput = document.getElementById('enterpriseCodeInput');
+            
+            queryButton.addEventListener('click', function() {
+                const queryCode = enterpriseCodeInput.value.trim();
+                
+                if (!queryCode) {
+                    alert('请输入企业编码');
+                    enterpriseCodeInput.focus();
+                    return;
+                }
+                
+                filterCustomerTable(queryCode);
+            });
+            
+            resetButton.addEventListener('click', function() {
+                resetCustomerTable();
+            });
+            
+            enterpriseCodeInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    queryButton.click();
+                }
+            });
+            
+            enterpriseCodeInput.addEventListener('focus', function() {
+                this.style.color = '#333';
+            });
+        }
+        
+        // 过滤客户表格
+        function filterCustomerTable(queryCode) {
+            const tableBody = document.getElementById('customerTableBody');
+            tableBody.innerHTML = '';
+            
+            filteredCustomerRows = allCustomerRows.filter(row => {
+                return row.code.includes(queryCode);
+            });
+            
+            if (filteredCustomerRows.length === 0) {
+                const noResultRow = document.createElement('tr');
+                noResultRow.innerHTML = `
+                    <td colspan="8" style="text-align: center; padding: 30px; color: #999;">
+                        <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                        未找到企业编码为 "${queryCode}" 的客户信息
+                    </td>
+                `;
+                tableBody.appendChild(noResultRow);
+            } else {
+                filteredCustomerRows.forEach(row => {
+                    tableBody.appendChild(row.element);
+                });
+            }
+        }
+        
+        // 恢复客户表格到初始状态
+        function resetCustomerTable() {
+            const tableBody = document.getElementById('customerTableBody');
+            tableBody.innerHTML = '';
+            
+            document.getElementById('enterpriseCodeInput').value = '';
+            
+            filteredCustomerRows = [...allCustomerRows];
+            
+            filteredCustomerRows.forEach(row => {
+                tableBody.appendChild(row.element);
+            });
+            
+            showTemporaryMessage('已恢复显示所有企业信息', 'success');
+        }
+        
+        // 显示临时消息
+        function showTemporaryMessage(message, type) {
+            const existingMessage = document.querySelector('.temp-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = `temp-message ${type}`;
+            messageElement.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            messageElement.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 30px;
+                background-color: ${type === 'success' ? '#4caf50' : '#2a5bc7'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 14px;
+                font-weight: 500;
+                animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+            `;
+            
+            const styleSheet = document.createElement('style');
+            styleSheet.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0%); opacity: 1; }
+                }
+                @keyframes fadeOut {
+                    from { opacity: 1; }
+                    to { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(styleSheet);
+            
+            document.body.appendChild(messageElement);
+            
+            setTimeout(() => {
+                if (messageElement.parentNode) {
+                    messageElement.remove();
+                }
+                if (styleSheet.parentNode) {
+                    styleSheet.remove();
+                }
+            }, 3000);
+        }
+        
+        // 打开详情模态框 - 基于附件JSON生成内容
+        function openDetailModal(customerCode, customerName) {
+            const detailData = riskDetailData[customerCode];
+            
+            let detailContent = '';
+            
+            if (detailData) {
+                // 格式化思考过程内容，保留原有换行和缩进
+                let thinkingContent = detailData.thinking;
+                // 处理特殊字符转义
+                thinkingContent = thinkingContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                
+                let crossValidationContent = detailData.crossValidation;
+                crossValidationContent = crossValidationContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                
+                let conclusionContent = detailData.conclusion;
+                conclusionContent = conclusionContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                
+                // 构建详情页内容 - 包含思考过程、交叉验证和综合判断三个部分
+                detailContent = `
+                    <h4>【思考过程】</h4>
+                    <p style="white-space: pre-line; line-height: 1.7;">${thinkingContent}</p>
+                    
+                    <h4>【交叉验证】</h4>
+                    <p style="white-space: pre-line; line-height: 1.7;">${crossValidationContent}</p>
+                    
+                    <h4>【综合判断】</h4>
+                    <p style="white-space: pre-line; line-height: 1.7;">${conclusionContent}</p>
+                `;
+            } else {
+                // 如果没有对应的详情数据，显示默认内容
+                detailContent = `
+                    <p>暂无该客户的归因解释详情数据。</p>
+                `;
+            }
+            
+            // 更新模态框内容
+            document.getElementById('detailModalTitle').textContent = `${customerName} (${customerCode}) - 归因解释详情`;
+            document.getElementById('detailModalContent').innerHTML = detailContent;
+            
+            // 显示模态框
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+        
+        // 关闭详情模态框
+        function closeDetailModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+        
+        // 点击模态框外部关闭对话框
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailModal();
+            }
+        });
+        
+        function initializePageState() {
+            setMainTabActive(document.getElementById('riskViewTab'));
+            setSubTabActive(document.getElementById('riskAssessmentTab'));
+            activateTab('tab1');
+            activateSubTab('subtab1');
+        }
+        
+        function maintainRiskViewActive() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById('riskViewTab').classList.add('active');
+            activateTab('tab1');
+        }
+        
+        function maintainRiskAssessmentActive() {
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById('riskAssessmentTab').classList.add('active');
+            activateSubTab('subtab1');
+        }
+        
+        function setMainTabActive(tabElement) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            tabElement.classList.add('active');
+        }
+        
+        function setSubTabActive(subTabElement) {
+            document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            subTabElement.classList.add('active');
+        }
+        
+        function activateTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            });
+            
+            const activeContent = document.getElementById(tabId);
+            if (activeContent) {
+                activeContent.classList.add('active');
+                activeContent.style.display = 'block';
+            }
+        }
+        
+        function activateSubTab(subtabId) {
+            document.querySelectorAll('.sub-tab-content').forEach(content => {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            });
+            
+            const activeSubContent = document.getElementById(subtabId);
+            if (activeSubContent) {
+                activeSubContent.classList.add('active');
+                activeSubContent.style.display = 'block';
+            }
+        }
+        
+        console.log('风控预警服务平台加载完成');
+        console.log('当前用户：王经理 (风险管理专家)');
+        console.log('当前显示：风险视图 -> 风险评估生成');
+        console.log('客户评估表格已更新：使用客户信息1.xlsx附件数据');
+        console.log('- 客户名称已更新为英文名称');
+        console.log('- 区域已更新为英文大写名称');
+        console.log('是否预测违约列已按规则修改：除1004535010、1005005006、1106844003为“否”外，其他均为“是”');
+        console.log('归因解释详情已根据附件JSON生成，包含思考过程、交叉验证、综合判断三部分');
+        console.log('企业编码查询功能已启用（位于表格左上角）');
+        console.log('表格列间距已调整为相等间距，客户名称和区域列已加宽以容纳英文内容');
+        console.log('表格标题“类型”已改为“企业规模”');
+    </script>
+</body>
+</html>
